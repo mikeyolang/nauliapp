@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:nauliapp/Constants/images.dart';
+import 'package:nauliapp/Screens/Login/login.dart';
+import 'package:nauliapp/Screens/Signup/signup.dart';
+import 'package:nauliapp/Utils/Constants/images.dart';
 import 'package:nauliapp/Models/onboarding_itens.dart';
 import 'package:nauliapp/Screens/Onboarding/dot_indicator.dart';
 import 'package:nauliapp/Screens/Onboarding/onboarding_content.dart';
@@ -120,7 +122,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               SizedBox(
                 width: mediaQuerry.width,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()));
+                  },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.black,
                     backgroundColor: Colors.lightGreen,
@@ -139,7 +146,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               SizedBox(
                 width: mediaQuerry.width,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUp()));
+                  },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.black,
                     backgroundColor: Colors.lightGreen,

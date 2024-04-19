@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nauliapp/Screens/Login/login.dart';
+
+import 'package:nauliapp/Screens/Onboarding/onboarding_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,14 +12,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Nauli App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const LoginPage(),
+      home: OnboardingScreen(),
     );
   }
 }

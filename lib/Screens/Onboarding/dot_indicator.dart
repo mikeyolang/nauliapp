@@ -1,9 +1,7 @@
 // Dot indicator widget
 import 'package:flutter/material.dart';
 
-import '../../Constants/colors.dart';
-
-
+import '../../Utils/Constants/colors.dart';
 
 class DotIndicator extends StatelessWidget {
   const DotIndicator({
@@ -17,7 +15,7 @@ class DotIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.all(4),
       height: 8,
       width: isActive ? 24 : 8,
       decoration: BoxDecoration(
