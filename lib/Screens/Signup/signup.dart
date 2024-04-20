@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nauliapp/Screens/Login/login.dart';
 import 'package:nauliapp/Screens/Onboarding/onboarding_screen.dart';
+import 'package:nauliapp/Screens/verification.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -82,6 +83,9 @@ class _SignUpState extends State<SignUp> {
                         return null;
                       },
                       decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blue),
+                        ),
                         icon: Icon(Icons.person),
                         border: InputBorder.none,
                         hintText: "First Name",
@@ -108,6 +112,9 @@ class _SignUpState extends State<SignUp> {
                         return null;
                       },
                       decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blue),
+                        ),
                         icon: Icon(Icons.person),
                         border: InputBorder.none,
                         hintText: "Second Name",
@@ -134,6 +141,9 @@ class _SignUpState extends State<SignUp> {
                         return null;
                       },
                       decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blue),
+                        ),
                         icon: Icon(Icons.phone),
                         border: InputBorder.none,
                         hintText: "Enter Phone Number",
@@ -162,6 +172,9 @@ class _SignUpState extends State<SignUp> {
                       },
                       obscureText: !isVisible,
                       decoration: InputDecoration(
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
                           icon: const Icon(Icons.lock),
                           border: InputBorder.none,
                           hintText: "Password",
@@ -205,6 +218,9 @@ class _SignUpState extends State<SignUp> {
                       },
                       obscureText: !isVisible,
                       decoration: InputDecoration(
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
                           icon: const Icon(Icons.lock),
                           border: InputBorder.none,
                           hintText: "Confirm Password",
@@ -248,7 +264,13 @@ class _SignUpState extends State<SignUp> {
                       color: Colors.blue,
                     ),
                     child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Otp()),
+                          );
+                        },
                         child: const Text(
                           "SIGN UP",
                           style: TextStyle(color: Colors.white),

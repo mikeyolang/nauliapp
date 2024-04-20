@@ -29,13 +29,25 @@ class OnboardingContent extends StatelessWidget {
         description,
         textAlign: TextAlign.center,
         style: const TextStyle(
-          color: Colors.grey,
+          color: Colors.black54,
           fontSize: 16,
           fontWeight: FontWeight.w400,
         ),
       ),
       const Spacer(),
-      Image.asset(image),
+      // Creating an Image with rounded border
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Image.asset(
+          image,
+          height: 300,
+          width: 300,
+          fit: BoxFit.cover,
+        ),
+      ),
       const Spacer(),
     ]);
   }

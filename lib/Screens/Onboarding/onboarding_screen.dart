@@ -23,14 +23,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void initState() {
     _pageController = PageController();
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (_pageIndex < 2) {
+      if (_pageIndex < 3) {
         _pageIndex++;
       } else {
         _pageIndex = 0;
       }
       _pageController.animateToPage(
         _pageIndex,
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.easeIn,
       );
     });
@@ -39,19 +39,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<OnboardingItems> _onboardingItems = [
     OnboardingItems(
-      title: "Welcome To Nauli App",
-      description: "Lorem20",
-      imagePath: onboardImageOne,
+      title: "Welcome To Nauli ",
+      description: "Enjoy Rides All over the Country",
+      imagePath: onboardImageWelcome,
     ),
     OnboardingItems(
-      title: "Welcome To Nauli App",
-      description: "Lorem20",
-      imagePath: onboardImageOne,
+      title: "Vehicle Booking",
+      description: "Book vehicles for your trips conveniently online.",
+      imagePath: onboardImageVehicle,
     ),
     OnboardingItems(
-      title: "Welcome To Nauli App",
-      description: "Lorem20",
-      imagePath: onboardImageOne,
+      title: "Flexible Schedules",
+      description: "Enjoy flexible departure times to suit your needs.",
+      imagePath: onboardImageFlex,
+    ),
+    OnboardingItems(
+      title: "Secure Payments",
+      description: "Make payments securely through our platform.",
+      imagePath: onboardImageSecure,
     ),
   ];
 

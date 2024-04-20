@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nauliapp/Screens/Home/home.dart';
 
 import 'package:nauliapp/Screens/Onboarding/onboarding_screen.dart';
+import 'package:nauliapp/Screens/verification.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       title: 'Nauli App',
       debugShowCheckedModeBanner: false,
-      home: OnboardingScreen(),
+      home: Otp(),
     );
   }
 }

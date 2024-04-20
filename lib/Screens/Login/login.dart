@@ -64,6 +64,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                       decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blue),
+                        ),
                         icon: Icon(Icons.phone),
                         border: InputBorder.none,
                         hintText: "Phone Number",
@@ -93,6 +96,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       obscureText: !isVisible,
                       decoration: InputDecoration(
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
                           icon: const Icon(Icons.lock),
                           border: InputBorder.none,
                           hintText: "Password",
