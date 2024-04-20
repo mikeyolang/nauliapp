@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nauliapp/Screens/Signup/signup.dart';
+import 'package:nauliapp/Screens/signup.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

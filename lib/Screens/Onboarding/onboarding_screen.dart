@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:nauliapp/Screens/Login/login.dart';
-import 'package:nauliapp/Screens/Signup/signup.dart';
+import 'package:nauliapp/Screens/login.dart';
+import 'package:nauliapp/Screens/signup.dart';
 import 'package:nauliapp/Utils/Constants/images.dart';
 import 'package:nauliapp/Models/onboarding_itens.dart';
 import 'package:nauliapp/Screens/Onboarding/dot_indicator.dart';
@@ -30,7 +30,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       }
       _pageController.animateToPage(
         _pageIndex,
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeIn,
       );
     });

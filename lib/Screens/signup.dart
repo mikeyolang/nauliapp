@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nauliapp/Screens/Login/login.dart';
+import 'package:nauliapp/Screens/login.dart';
 import 'package:nauliapp/Screens/Onboarding/onboarding_screen.dart';
 import 'package:nauliapp/Screens/verification.dart';
 
@@ -218,23 +218,25 @@ class _SignUpState extends State<SignUp> {
                       },
                       obscureText: !isVisible,
                       decoration: InputDecoration(
-                          focusedBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                          icon: const Icon(Icons.lock),
-                          border: InputBorder.none,
-                          hintText: "Confirm Password",
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                //In here we will create a click to show and hide the password a toggle button
-                                setState(() {
-                                  //toggle button
-                                  isVisible = !isVisible;
-                                });
-                              },
-                              icon: Icon(isVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off))),
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blue),
+                        ),
+                        icon: const Icon(Icons.lock),
+                        border: InputBorder.none,
+                        hintText: "Confirm Password",
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            //In here we will create a click to show and hide the password a toggle button
+                            setState(() {
+                              //toggle button
+                              isVisible = !isVisible;
+                            });
+                          },
+                          icon: Icon(isVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(
