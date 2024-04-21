@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-
 class BookingTable extends StatelessWidget {
+  const BookingTable({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Booking Details'),
+        title: const Text('Booking Details'),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -19,24 +20,24 @@ class BookingTable extends StatelessWidget {
             DataColumn(label: Text('Total Cost')),
             DataColumn(label: Text('Actions')),
           ],
-          rows: const <DataRow>[
+          rows: <DataRow>[
             DataRow(
               cells: <DataCell>[
-                DataCell(Text('BK001')),
-                DataCell(Text('John Doe')),
-                DataCell(Text('2024-04-20')),
-                DataCell(Text('2')),
-                DataCell(Text('\$100')),
+                const DataCell(Text('BK001')),
+                const DataCell(Text('John Doe')),
+                const DataCell(Text('2024-04-20')),
+                const DataCell(Text('2')),
+                const DataCell(Text('\$100')),
                 DataCell(Row(
                   children: <Widget>[
                     IconButton(
-                      icon: Icon(Icons.edit),
+                      icon: const Icon(Icons.edit),
                       onPressed: () {
                         // Edit action
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                       onPressed: () {
                         // Delete action
                       },

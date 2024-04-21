@@ -1,15 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:nauliapp/Common/Widgets/nav_root.dart';
 import 'package:nauliapp/Utils/Constants/images.dart';
 
 class HomePageScreen extends StatelessWidget {
-  HomePageScreen({super.key});
+  const HomePageScreen({super.key});
 // Creating static data in Lists for the Grid
 // List of Services
-  final List serviceName = [
+  static const List serviceName = [
     "Ride",
     "Bus",
     "Flight",
@@ -17,7 +13,7 @@ class HomePageScreen extends StatelessWidget {
     "Hotel",
     "Car",
   ];
-  final List<Color> serviceColor = [
+  static const List<Color> serviceColor = [
     Colors.blue,
     Colors.red,
     Colors.green,
@@ -25,40 +21,40 @@ class HomePageScreen extends StatelessWidget {
     Colors.purple,
     Colors.pink,
   ];
-  final List<Icon> serviceIcon = [
-    const Icon(
+  static const List<Icon> serviceIcon = [
+    Icon(
       Icons.directions_car,
       size: 30,
       color: Colors.white,
     ),
-    const Icon(
+    Icon(
       Icons.directions_bus,
       size: 30,
       color: Colors.white,
     ),
-    const Icon(
+    Icon(
       Icons.flight,
       size: 30,
       color: Colors.white,
     ),
-    const Icon(
+    Icon(
       Icons.train,
       size: 30,
       color: Colors.white,
     ),
-    const Icon(
+    Icon(
       Icons.hotel,
       size: 30,
       color: Colors.white,
     ),
-    const Icon(
+    Icon(
       Icons.directions_car,
       size: 30,
       color: Colors.white,
     ),
   ];
 
-  List imageList = [
+  static const List imageList = [
     onboardImageWelcome,
     onboardImageVehicle,
     onboardImageFlex,
@@ -264,14 +260,6 @@ class HomePageScreen extends StatelessWidget {
                       ),
                       const SizedBox(
                         height: 10,
-                      ),
-                      Text(
-                        imageList[index],
-                        style: TextStyle(
-                          color: Colors.black.withOpacity(.5),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
                       ),
                     ],
                   ),

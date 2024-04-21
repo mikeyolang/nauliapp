@@ -19,13 +19,16 @@ class _BookingFormState extends State<BookingForm> {
   final TextEditingController _costController = TextEditingController();
   final TextEditingController _seatsController = TextEditingController();
   final TextEditingController _pickUpController = TextEditingController();
-
+  String _from = 'Choose From';
+  String _to = 'Choose To';
+  // final String _pickUpLocation = 'Office';
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
+      locale: const Locale('en', 'US'),
     );
     if (picked != selectedDate) {
       setState(() {
@@ -60,36 +63,107 @@ class _BookingFormState extends State<BookingForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reserve Your Seat'),
+        title: const Text(
+          'Reserve Your Seat',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Roboto',
+          ),
+        ),
       ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              TextFormField(
-                controller: _departureController,
-                decoration: const InputDecoration(
-                  labelText: 'Departure',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter departure location';
-                  }
-                  return null;
-                },
+              Row(
+                children: <Widget>[
+                  Radio(
+                    value: "Self",
+                    groupValue: "",
+                    onChanged: (value) => {},
+                  ),
+                  const Text("Self"),
+                  Radio(
+                    value: "Other",
+                    groupValue: "",
+                    onChanged: (value) => {},
+                  ),
+                  const Text("Other"),
+                ],
               ),
-              TextFormField(
-                controller: _arrivalController,
-                decoration: const InputDecoration(
-                  labelText: 'Arrival',
+              Container(
+                margin: const EdgeInsets.only(left: 12, right: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
                 ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter arrival location';
-                  }
-                  return null;
-                },
+                child: ListTile(
+                  title: Text(
+                    'Travel Date: ${DateFormat("dd/MM/yyyy").format(selectedDate)}',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Roboto',
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.calendar_today_outlined,
+                    size: 20,
+                  ),
+                  onTap: () => _selectDate(context),
+                ),
+              ),
+               Container(
+                padding: const EdgeInsets.only(left: 12),
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: TextFormField(
+                  controller: _departureController,
+                  decoration: const InputDecoration(
+                    hintText: "",
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Roboto',
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter departure location';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              DropdownButtonFormField(
+                hint: const Text('From'),
+                value: _from,
+                items: ['Choose From', 'Item 1', 'Item 2', 'Item 3']
+                    .map((value) => DropdownMenuItem(
+                          value: value,
+                          child: Text(value),
+                        ))
+                    .toList(),
+                onChanged: (newValue) => setState(() => _from = newValue!),
+              ),
+              DropdownButtonFormField(
+                hint: const Text('To'),
+                value: _to,
+                items: ['Choose To', 'Item 1', 'Item 2', 'Item 3']
+                    .map((value) => DropdownMenuItem(
+                          value: value,
+                          child: Text(value),
+                        ))
+                    .toList(),
+                onChanged: (newValue) => setState(() => _to = newValue!),
               ),
               TextFormField(
                 controller: _costController,
@@ -97,17 +171,11 @@ class _BookingFormState extends State<BookingForm> {
                   labelText: 'Cost per Seat',
                 ),
                 keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter cost per seat';
-                  }
-                  return null;
-                },
               ),
               TextFormField(
                 controller: _seatsController,
                 decoration: const InputDecoration(
-                  labelText: 'Number of Seats',
+                  labelText: 'Seats Reserved',
                 ),
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -129,16 +197,14 @@ class _BookingFormState extends State<BookingForm> {
                   return null;
                 },
               ),
-              ListTile(
-                title: Text(
-                    'Travel Date: ${DateFormat.yMd().format(selectedDate)}'),
-                trailing: const Icon(Icons.calendar_today),
-                onTap: () => _selectDate(context),
-              ),
-              ListTile(
-                title: Text('Departure Time: ${departureTime.format(context)}'),
-                trailing: const Icon(Icons.access_time),
-                onTap: () => _selectTime(context),
+              const Text(
+                "Pick up Location must be along the way. By default passengers board at the office",
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Roboto',
+                ),
               ),
               ElevatedButton(
                 onPressed: () {

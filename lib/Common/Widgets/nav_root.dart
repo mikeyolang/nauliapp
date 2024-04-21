@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nauliapp/Screens/home.dart';
 
@@ -13,7 +12,7 @@ class _NavBarRootsState extends State<NavBarRoots> {
   int _selectIndex = 0;
   final _screens = [
     //Home Screen
-    HomePageScreen(),
+    const HomePageScreen(),
     //  Bookings Screen
 
     //  Profile Screen

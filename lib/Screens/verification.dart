@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nauliapp/Utils/Constants/images.dart';
 
 class Otp extends StatefulWidget {
   const Otp({super.key});
