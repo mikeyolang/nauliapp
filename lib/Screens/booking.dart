@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nauliapp/Screens/booking_table.dart';
 
 class BookingForm extends StatefulWidget {
   const BookingForm({super.key});
@@ -63,12 +64,25 @@ class _BookingFormState extends State<BookingForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: const [],
+        elevation: 5,
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+        shape: ShapeBorder.lerp(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          1,
+        ),
         title: const Text(
-          'Reserve Your Seat',
+          'Booking Your Seat',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w300,
             fontFamily: 'Roboto',
           ),
         ),
@@ -117,112 +131,183 @@ class _BookingFormState extends State<BookingForm> {
                   onTap: () => _selectDate(context),
                 ),
               ),
-               Container(
-                padding: const EdgeInsets.only(left: 12),
+              Container(
                 margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(5),
                 ),
-                child: TextFormField(
-                  controller: _departureController,
+                padding: const EdgeInsets.only(left: 12),
+                child: DropdownButtonFormField(
                   decoration: const InputDecoration(
-                    hintText: "",
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Roboto',
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue),
                     ),
                   ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter departure location';
+                  hint: const Text('From'),
+                  value: _from,
+                  items: [
+                    'Choose From',
+                    'Nairobi',
+                    'Mombasa',
+                    'Kisumu',
+                    'Nakuru',
+                  ]
+                      .map((value) => DropdownMenuItem(
+                            value: value,
+                            child: Text(value),
+                          ))
+                      .toList(),
+                  onChanged: (newValue) => setState(() => _from = newValue!),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                padding: const EdgeInsets.only(left: 12),
+                child: DropdownButtonFormField(
+                  decoration: const InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
+                  ),
+                  hint: const Text('To'),
+                  value: _to,
+                  items: ['Choose To', 'Item 1', 'Item 2', 'Item 3']
+                      .map((value) => DropdownMenuItem(
+                            value: value,
+                            child: Text(value),
+                          ))
+                      .toList(),
+                  onChanged: (newValue) => setState(() => _to = newValue!),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                padding: const EdgeInsets.only(left: 10),
+                child: TextFormField(
+                  controller: _costController,
+                  decoration: const InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
+                    hintText: "Cost Per Seat",
+                    hintStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                padding: const EdgeInsets.only(left: 10),
+                child: TextFormField(
+                  controller: _seatsController,
+                  decoration: const InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
+                    hintText: "Number of Seats",
+                    hintStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                padding: const EdgeInsets.only(left: 10),
+                child: TextFormField(
+                  controller: _pickUpController,
+                  decoration: const InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
+                    hintText: "Pick-Up Location",
+                    hintStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              // Styling the the below text
+              Container(
+                margin: const EdgeInsets.all(5),
+                padding: const EdgeInsets.only(left: 10),
+                child: const Text(
+                  "Pick up Location must be along the way. By default passengers board at the office",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 15,
+                    // fontWeight: FontWeight.bold is removed
+                    fontFamily: 'Roboto',
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                height: 55,
+                width: MediaQuery.of(context).size.width * .9,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.orange,
+                ),
+                child: TextButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      //Login method will be here
+                      print('Booking Details:');
+                      print('Departure: ${_departureController.text}');
+                      print('Arrival: ${_arrivalController.text}');
+                      print('Cost per Seat: ${_costController.text}');
+                      print('Number of Seats: ${_seatsController.text}');
+                      print('Pick-Up Location: ${_pickUpController.text}');
+                      print(
+                          'Travel Date: ${DateFormat.yMd().format(selectedDate)}');
+                      print('Departure Time: ${departureTime.format(context)}');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BookingTable(),
+                        ),
+                      );
+                      //We are going to create a user
                     }
-                    return null;
                   },
+                  child: const Text(
+                    "Book",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
-              ),
-              DropdownButtonFormField(
-                hint: const Text('From'),
-                value: _from,
-                items: ['Choose From', 'Item 1', 'Item 2', 'Item 3']
-                    .map((value) => DropdownMenuItem(
-                          value: value,
-                          child: Text(value),
-                        ))
-                    .toList(),
-                onChanged: (newValue) => setState(() => _from = newValue!),
-              ),
-              DropdownButtonFormField(
-                hint: const Text('To'),
-                value: _to,
-                items: ['Choose To', 'Item 1', 'Item 2', 'Item 3']
-                    .map((value) => DropdownMenuItem(
-                          value: value,
-                          child: Text(value),
-                        ))
-                    .toList(),
-                onChanged: (newValue) => setState(() => _to = newValue!),
-              ),
-              TextFormField(
-                controller: _costController,
-                decoration: const InputDecoration(
-                  labelText: 'Cost per Seat',
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              TextFormField(
-                controller: _seatsController,
-                decoration: const InputDecoration(
-                  labelText: 'Seats Reserved',
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter number of seats';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _pickUpController,
-                decoration: const InputDecoration(
-                  labelText: 'Pick-Up Location',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter pick-up location';
-                  }
-                  return null;
-                },
-              ),
-              const Text(
-                "Pick up Location must be along the way. By default passengers board at the office",
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Roboto',
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Process data
-                    print('Booking Details:');
-                    print('Departure: ${_departureController.text}');
-                    print('Arrival: ${_arrivalController.text}');
-                    print('Cost per Seat: ${_costController.text}');
-                    print('Number of Seats: ${_seatsController.text}');
-                    print('Pick-Up Location: ${_pickUpController.text}');
-                    print(
-                        'Travel Date: ${DateFormat.yMd().format(selectedDate)}');
-                    print('Departure Time: ${departureTime.format(context)}');
-                    // Here you can add your code to handle the booking data
-                  }
-                },
-                child: const Text('Book Now'),
               ),
             ],
           ),

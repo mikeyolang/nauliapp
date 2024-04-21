@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nauliapp/Screens/booking.dart';
 import 'package:nauliapp/Utils/Constants/images.dart';
 
 class HomePageScreen extends StatelessWidget {
@@ -8,18 +9,12 @@ class HomePageScreen extends StatelessWidget {
   static const List serviceName = [
     "Ride",
     "Bus",
-    "Flight",
-    "Train",
-    "Hotel",
     "Car",
   ];
   static const List<Color> serviceColor = [
     Colors.blue,
     Colors.red,
     Colors.green,
-    Colors.orange,
-    Colors.purple,
-    Colors.pink,
   ];
   static const List<Icon> serviceIcon = [
     Icon(
@@ -29,21 +24,6 @@ class HomePageScreen extends StatelessWidget {
     ),
     Icon(
       Icons.directions_bus,
-      size: 30,
-      color: Colors.white,
-    ),
-    Icon(
-      Icons.flight,
-      size: 30,
-      color: Colors.white,
-    ),
-    Icon(
-      Icons.train,
-      size: 30,
-      color: Colors.white,
-    ),
-    Icon(
-      Icons.hotel,
       size: 30,
       color: Colors.white,
     ),
@@ -145,7 +125,6 @@ class HomePageScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(
               top: 20,
-              left: 15,
               right: 15,
             ),
             child: GridView.builder(
@@ -218,55 +197,80 @@ class HomePageScreen extends StatelessWidget {
             height: 10,
           ),
           GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2),
+            itemCount: 4,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio:
-                  (MediaQuery.of(context).size.height) / (4 * 240),
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-            ),
             itemBuilder: (context, index) {
               return InkWell(
                 onTap: () {},
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 20,
-                    horizontal: 10,
+                  margin: const EdgeInsets.only(
+                    left: 15,
+                    right: 15,
+                    bottom: 10,
+                    top: 10,
                   ),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(.2),
+                        color: Colors.black.withOpacity(.1),
                         blurRadius: 10,
-                        spreadRadius: 2,
-                        offset: const Offset(0, 3),
+                        spreadRadius: 1,
                       ),
                     ],
                   ),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Image.asset(
-                          imageList[index],
-                          height: 100,
-                          width: 100,
-                          scale: 0.5,
-                        ),
+                      Image.asset(
+                        imageList[index],
+                        height: 80,
+                        width: 140,
+                        fit: BoxFit.cover,
                       ),
                       const SizedBox(
                         height: 10,
+                      ),
+                      // Creating an elevated Button written Book with us
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const BookingForm(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 82, 219, 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          "Book with us",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
               );
             },
-          )
+          ),
         ],
       ),
       // bottomNavigationBar: const NavBarRoots(),

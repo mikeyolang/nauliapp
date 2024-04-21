@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nauliapp/Screens/Onboarding/onboarding_screen.dart';
+import 'package:nauliapp/Screens/home.dart';
 
 void main() {
   runApp(const MyApp());

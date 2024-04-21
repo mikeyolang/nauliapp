@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nauliapp/Common/Widgets/nav_root.dart';
 import 'package:nauliapp/Screens/signup.dart';
 
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -128,23 +127,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.blue,
                     ),
                     child: TextButton(
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            //Login method will be here
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          //Login method will be here
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const NavBarRoots(),
-                              ),
-                            );
-                            //We are going to create a user
-                          }
-                        },
-                        child: const Text(
-                          "LOGIN",
-                          style: TextStyle(color: Colors.white),
-                        )),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NavBarRoots(),
+                            ),
+                          );
+                          //We are going to create a user
+                        }
+                      },
+                      child: const Text(
+                        "LOGIN",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
 
                   //Sign up button

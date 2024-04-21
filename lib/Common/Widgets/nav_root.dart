@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nauliapp/Screens/booking.dart';
+import 'package:nauliapp/Screens/booking_table.dart';
 import 'package:nauliapp/Screens/home.dart';
 
 class NavBarRoots extends StatefulWidget {
@@ -14,7 +16,7 @@ class _NavBarRootsState extends State<NavBarRoots> {
     //Home Screen
     const HomePageScreen(),
     //  Bookings Screen
-
+    const BookingTable()
     //  Profile Screen
 
     //  Settings screen
@@ -48,18 +50,19 @@ class _NavBarRootsState extends State<NavBarRoots> {
             ),
 
             BottomNavigationBarItem(
-              icon: Icon(Icons.schedule_outlined),
-              label: "Bookings",
+              icon: Icon(Icons.calendar_today_outlined),
+              label: "Schedules",
+            ),
+
+            // BottomNavigationBarItem(Icon(Icons.people), label: "Community")
+            BottomNavigationBarItem(
+              icon: Icon(Icons.help),
+              label: "Help",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_2_rounded),
               label: "Profile",
             ),
-            // BottomNavigationBarItem(Icon(Icons.people), label: "Community")
-            BottomNavigationBarItem(
-              icon: Icon(Icons.help),
-              label: "Help",
-            )
           ],
         ),
       ),
