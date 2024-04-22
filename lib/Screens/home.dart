@@ -63,15 +63,20 @@ class HomePageScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(
-                      Icons.menu,
-                      size: 30,
-                      color: Colors.white,
+                    IconButton(
+                      onPressed: () {
+                        Drawer();
+                      },
+                      icon: const Icon(
+                        Icons.menu,
+                        size: 30,
+                        color: Colors.white,
+                      ),
                     ),
-                    Icon(
+                    const Icon(
                       Icons.notifications,
                       size: 30,
                       color: Colors.white,

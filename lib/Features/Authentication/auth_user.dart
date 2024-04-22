@@ -1,25 +1,15 @@
-class User {
-  final int? userId;
-  final String phoneNumber;
-  final String password;
+class AuthUser {
+  String? phone;
+  String? firstName;
+  String? lastName;
+  String? password;
+  bool? isVerified = false;
 
-  User({
-    required this.userId,
-    required this.phoneNumber,
-    required this.password,
+  AuthUser({
+    this.phone,
+    this.firstName,
+    this.lastName,
+    this.password,
+    this.isVerified,
   });
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      userId: json['userId'],
-      phoneNumber: json['phoneNumber'],
-      password: json['password'],
-    );
-  }
-  Map<String, dynamic> toJson() {
-    return {
-      'userId': userId,
-      'phoneNumber': phoneNumber,
-      'password': password,
-    };
-  }
 }
