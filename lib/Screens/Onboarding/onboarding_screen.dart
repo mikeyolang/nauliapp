@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nauliapp/Screens/login.dart';
 import 'package:nauliapp/Screens/signup.dart';
 import 'package:nauliapp/Utils/Constants/images.dart';
-import 'package:nauliapp/Models/onboarding_itens.dart';
+import 'package:nauliapp/Models/onboarding_items.dart';
 import 'package:nauliapp/Screens/Onboarding/dot_indicator.dart';
 import 'package:nauliapp/Screens/Onboarding/onboarding_content.dart';
 

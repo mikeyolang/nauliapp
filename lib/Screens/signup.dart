@@ -1,6 +1,10 @@
+// ignore_for_file: unrelated_type_equality_checks, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:nauliapp/Features/Authentication/auth_service.dart';
 import 'package:nauliapp/Screens/login.dart';
 import 'package:nauliapp/Screens/verification.dart';
+import 'package:nauliapp/Utils/Dialogs/error.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -265,11 +269,50 @@ class _SignUpState extends State<SignUp> {
                       color: Colors.blue,
                     ),
                     child: TextButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          // final firstName = firstNameController.text.toString();
+                          // final lastName = lastNameController.text.toString();
+                          // final phone = phoneController.text.toString();
+                          // final password = passwordController.text.toString();
+                          // final confirmPassword =
+                          //     confirmPasswordController.text.toString();
+                          // final authService = AuthService();
+                          // Map<String, dynamic> responseResult =
+                          //     await authService.signUp(
+                          //   phone,
+                          //   firstName,
+                          //   lastName,
+                          //   password,
+                          //   confirmPassword,
+                          // );
+                          // print('Sign-Up Response: ${responseResult['data']}');
+                          // bool isSuccess = responseResult['success'];
+                          // if (formKey.currentState!.validate()) {
+                          //   if (_agreedToTerms) {
+                          //     if (isSuccess) {
+                          //       Navigator.push(
+                          //         context,
+                          //         MaterialPageRoute(
+                          //           builder: (context) => Otp(
+                          //             phoneNumber: phone,
+                          //           ),
+                          //         ),
+                          //       );
+                          //     } else {
+                          //       showErrorDialog(
+                          //         context,
+                          //         "An error occurred while signing up. Please try again. Try using a different phone number.",
+                          //       );
+                          //     }
+                          //   }
+                          // }
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Otp()),
+                              builder: (context) => Otp(
+                                phoneNumber: phoneController.text,
+                              ),
+                            ),
                           );
                         },
                         child: const Text(
@@ -284,17 +327,18 @@ class _SignUpState extends State<SignUp> {
                     children: [
                       const Text("Already have an account?"),
                       TextButton(
-                          onPressed: () {
-                            //Navigate to sign up
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginScreen()));
-                          },
-                          child: const Text(
-                            "Login",
-                            style: TextStyle(color: Colors.blue),
-                          ))
+                        onPressed: () {
+                          //Navigate to sign up
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginScreen()));
+                        },
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
                     ],
                   )
                 ],

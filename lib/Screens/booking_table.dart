@@ -1,53 +1,62 @@
 import 'package:flutter/material.dart';
 
+
+
 class BookingTable extends StatelessWidget {
-  const BookingTable({super.key});
+  final List<Map<String, dynamic>> bookings = [
+    {
+      'number': 1,
+      'reference': 'BR123',
+      'travelDate': '2024-05-01',
+      'seats': 2,
+    },
+    // Add more bookings here
+  ];
+
+   BookingTable({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Booking Details'),
+        title: const Text('Customer Bookings'),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
-          columns: const <DataColumn>[
-            DataColumn(label: Text('Booking ID')),
-            DataColumn(label: Text('Customer Name')),
-            DataColumn(label: Text('Date')),
-            DataColumn(label: Text('Seats')),
-            DataColumn(label: Text('Total Cost')),
+          columns: const [
+            DataColumn(label: Text('Number')),
+            DataColumn(label: Text('Booking Reference')),
+            DataColumn(label: Text('Travel Date')),
+            DataColumn(label: Text('Number of Seats')),
             DataColumn(label: Text('Actions')),
           ],
-          rows: <DataRow>[
-            DataRow(
-              cells: <DataCell>[
-                const DataCell(Text('BK001')),
-                const DataCell(Text('John Doe')),
-                const DataCell(Text('2024-04-20')),
-                const DataCell(Text('2')),
-                const DataCell(Text('\$100')),
-                DataCell(Row(
-                  children: <Widget>[
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        // Edit action
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        // Delete action
-                      },
-                    ),
-                  ],
-                )),
-              ],
-            ),
-            // More DataRows can be added here
-          ],
+          rows: bookings.map((booking) {
+            return DataRow(cells: [
+              DataCell(Text(booking['number'].toString())),
+              DataCell(Text(booking['reference'])),
+              DataCell(Text(booking['travelDate'])),
+              DataCell(Text(booking['seats'].toString())),
+              DataCell(Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      // Implement payment functionality
+                    },
+                    child: const Text('Pay'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Implement delete functionality
+                    },
+                    style: ElevatedButton.styleFrom(),
+                    child: const Icon(Icons.delete),
+                  ),
+                ],
+              )),
+            ]);
+          }).toList(),
         ),
       ),
     );

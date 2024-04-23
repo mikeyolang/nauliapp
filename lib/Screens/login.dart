@@ -1,6 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:nauliapp/Common/Widgets/nav_root.dart';
+import 'package:nauliapp/Features/Authentication/auth_provider.dart';
 import 'package:nauliapp/Screens/signup.dart';
+import 'package:nauliapp/Features/Authentication/auth_service.dart';
+import 'package:nauliapp/Utils/Dialogs/error.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -127,17 +132,39 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.blue,
                     ),
                     child: TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (formKey.currentState!.validate()) {
-                          //Login method will be here
+                          final phone = phoneNumberController.text.toString();
+                          final password = passwordController.text.toString();
+                          final authService = AuthService();
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const NavBarRoots(),
-                            ),
+                          Map<String, dynamic> responseResult =
+                              await authService.signIn(
+                            phone,
+                            password,
                           );
-                          //We are going to create a user
+                          bool isSuccess = responseResult['success'];
+                          if (isSuccess) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const NavBarRoots(),
+                              ),
+                            );
+                          } else {
+                            showErrorDialog(context, responseResult['message']);
+                          }
+
+                          // I want that after successful login, the user should be redirected to the home page
+
+                          // ignore: unrelated_type_equality_checks
+
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => const NavBarRoots(),
+                          //   ),
+                          // );
                         }
                       },
                       child: const Text(

@@ -16,7 +16,7 @@ class _NavBarRootsState extends State<NavBarRoots> {
     //Home Screen
     const HomePageScreen(),
     //  Bookings Screen
-    const BookingTable()
+    BookingTable()
     //  Profile Screen
 
     //  Settings screen

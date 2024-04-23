@@ -1,8 +1,12 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, unused_field
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nauliapp/Features/Authentication/auth_service.dart';
 import 'package:nauliapp/Screens/booking_table.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:nauliapp/Utils/Dialogs/error.dart';
 
 class BookingForm extends StatefulWidget {
   const BookingForm({super.key});
@@ -20,8 +24,16 @@ class _BookingFormState extends State<BookingForm> {
   final TextEditingController _costController = TextEditingController();
   final TextEditingController _seatsController = TextEditingController();
   final TextEditingController _pickUpController = TextEditingController();
-  String _from = 'Choose From';
-  String _to = 'Choose To';
+
+  List<String> _fromRoutes = [];
+  String? _selectedFromRoute;
+  List<String> _toRoutes = [];
+  String? _selectedToRoute;
+  String? _costPerSeat;
+  String? _datePicked;
+  int? routeId;
+  String? vehicles;
+  String? _selectedVehicle;
   // final String _pickUpLocation = 'Office';
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -47,6 +59,101 @@ class _BookingFormState extends State<BookingForm> {
       setState(() {
         departureTime = picked!;
       });
+    }
+  }
+
+  final List<String> _routes = [];
+  String? _selectedRoute;
+  @override
+  void initState() {
+    super.initState();
+    _getFromRoutes();
+  }
+
+  Future<void> _getFromRoutes() async {
+    const url = 'https://booking.nauli.co.ke/api/v1/booking';
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        List<dynamic> routes = data['routes'];
+
+        setState(() {
+          print(data);
+          _fromRoutes =
+              routes.map((route) => route['from'].toString()).toList();
+        });
+      } else {
+        throw Exception('Failed to load from routes');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> fetchData(int routeId, String travelDate) async {
+    // Construct the URL by replacing routeId and travelDate in the endpoint
+    String url =
+        'https://booking.nauli.co.ke/api/v1/fetch-cost/$routeId/$travelDate';
+
+    try {
+      // Make the GET request
+      final response = await http.get(Uri.parse(url));
+
+      // Check the status code of the response
+      if (response.statusCode == 200) {
+        // Parse the JSON response body
+        Map<String, dynamic> responseData = json.decode(response.body);
+
+        // Extract data from the response
+        String cost = responseData['cost'];
+        List<dynamic> vehicles = responseData['vehicles'];
+        String date = responseData['date'];
+
+        setState(() {
+          _costPerSeat = cost;
+          vehicles = List<Map<String, dynamic>>.from(vehicles);
+          _selectedVehicle = null; // Reset selected vehicle
+        });
+
+        // Process the data as needed
+        print('Cost: $cost');
+        print('Date: $date');
+
+        // Print vehicle details
+        for (var vehicle in vehicles) {
+          print(
+              'Vehicle ID: ${vehicle['id']}, Time: ${vehicle['time']}, Capacity: ${vehicle['capacity']}, Count: ${vehicle['count']}');
+        }
+      } else {
+        // Handle any errors
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle network errors
+      print('Error fetching data: $e');
+    }
+  }
+
+  Future<void> _getToRoutes(String fromRoute) async {
+    final url = 'https://booking.nauli.co.ke/api/v1/fetch-routes/$fromRoute';
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        List<dynamic> routes = data['routes'];
+
+        setState(() {
+          _toRoutes = routes.map((route) => route['name'].toString()).toList();
+          routeId = routes.map((route) => route['id'] as int).toList().first;
+        });
+      } else {
+        throw Exception('Failed to load to routes');
+      }
+    } catch (e) {
+      print(e.toString());
     }
   }
 
@@ -97,13 +204,21 @@ class _BookingFormState extends State<BookingForm> {
                   Radio(
                     value: "Self",
                     groupValue: "",
-                    onChanged: (value) => {},
+                    onChanged: (value) => {
+                      setState(() {
+                        _selectedRoute = value;
+                      })
+                    },
                   ),
                   const Text("Self"),
                   Radio(
                     value: "Other",
                     groupValue: "",
-                    onChanged: (value) => {},
+                    onChanged: (value) => {
+                      setState(() {
+                        _selectedRoute = value;
+                      })
+                    },
                   ),
                   const Text("Other"),
                 ],
@@ -116,7 +231,7 @@ class _BookingFormState extends State<BookingForm> {
                 ),
                 child: ListTile(
                   title: Text(
-                    'Travel Date: ${DateFormat("dd/MM/yyyy").format(selectedDate)}',
+                    'Travel Date: ${DateFormat("yyyy-MM-dd").format(selectedDate)}',
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -128,7 +243,42 @@ class _BookingFormState extends State<BookingForm> {
                     Icons.calendar_today_outlined,
                     size: 20,
                   ),
-                  onTap: () => _selectDate(context),
+                  onTap: () {
+                    _selectDate(context);
+                    _datePicked = DateFormat("yyyy-MM-dd").format(selectedDate);
+                  },
+                ),
+              ),
+              Container(
+                height: 55,
+                width: MediaQuery.of(context).size.width * .9,
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                padding: const EdgeInsets.only(left: 12),
+                child: DropdownButtonFormField(
+                  decoration: const InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
+                  ),
+                  hint: const Text('Choose From'),
+                  value: _selectedFromRoute,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedFromRoute = newValue;
+                      _getToRoutes(newValue!);
+                    });
+                  },
+                  items:
+                      _fromRoutes.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
               ),
               Container(
@@ -144,45 +294,23 @@ class _BookingFormState extends State<BookingForm> {
                       borderSide: BorderSide(color: Colors.blue),
                     ),
                   ),
-                  hint: const Text('From'),
-                  value: _from,
-                  items: [
-                    'Choose From',
-                    'Nairobi',
-                    'Mombasa',
-                    'Kisumu',
-                    'Nakuru',
-                  ]
-                      .map((value) => DropdownMenuItem(
-                            value: value,
-                            child: Text(value),
-                          ))
-                      .toList(),
-                  onChanged: (newValue) => setState(() => _from = newValue!),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                padding: const EdgeInsets.only(left: 12),
-                child: DropdownButtonFormField(
-                  decoration: const InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue),
-                    ),
-                  ),
-                  hint: const Text('To'),
-                  value: _to,
-                  items: ['Choose To', 'Item 1', 'Item 2', 'Item 3']
-                      .map((value) => DropdownMenuItem(
-                            value: value,
-                            child: Text(value),
-                          ))
-                      .toList(),
-                  onChanged: (newValue) => setState(() => _to = newValue!),
+                  hint: const Text('Choose To'),
+                  value: _selectedToRoute,
+                  items:
+                      _toRoutes.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      fetchData(
+                        routeId!,
+                        _datePicked!,
+                      );
+                    });
+                  },
                 ),
               ),
               Container(
@@ -192,21 +320,7 @@ class _BookingFormState extends State<BookingForm> {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 padding: const EdgeInsets.only(left: 10),
-                child: TextFormField(
-                  controller: _costController,
-                  decoration: const InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue),
-                    ),
-                    hintText: "Cost Per Seat",
-                    hintStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
+                child: Text('Cost per seat: $_costPerSeat'),
               ),
               Container(
                 margin: const EdgeInsets.all(12),
@@ -231,6 +345,21 @@ class _BookingFormState extends State<BookingForm> {
                   keyboardType: TextInputType.number,
                 ),
               ),
+              // Container(
+              //   margin: const EdgeInsets.all(12),
+              //   decoration: BoxDecoration(
+              //     border: Border.all(color: Colors.grey),
+              //     borderRadius: BorderRadius.circular(5),
+              //   ),
+              //   padding: const EdgeInsets.only(left: 10),
+              //   child: TextField(
+              //     controller: _travelDateController,
+              //     decoration: const InputDecoration(
+              //       labelText: 'Enter travel date (YYYY-MM-DD)',
+              //     ),
+              //   ),
+              // ),
+
               Container(
                 margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -282,24 +411,37 @@ class _BookingFormState extends State<BookingForm> {
                   color: Colors.orange,
                 ),
                 child: TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      //Login method will be here
-                      print('Booking Details:');
-                      print('Departure: ${_departureController.text}');
-                      print('Arrival: ${_arrivalController.text}');
-                      print('Cost per Seat: ${_costController.text}');
-                      print('Number of Seats: ${_seatsController.text}');
-                      print('Pick-Up Location: ${_pickUpController.text}');
-                      print(
-                          'Travel Date: ${DateFormat.yMd().format(selectedDate)}');
-                      print('Departure Time: ${departureTime.format(context)}');
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const BookingTable(),
-                        ),
+                      final numberOfSeats = _seatsController.text;
+                      final pickUpLocation = _pickUpController.text;
+                      final date = _datePicked;
+
+                      final toRoute = _selectedToRoute;
+
+                      // final totalCosts = cost * numberOfSeats;
+                      final authService = AuthService();
+                      final responseResult =
+                          await authService.saveBookingRequest(
+                        pickUp: pickUpLocation,
+                        seats: 12,
+                        time: "02:00",
+                        to: toRoute!,
+                        travelDate: date!,
                       );
+                      bool isSuccess = responseResult['success'];
+                      if (isSuccess) {
+                        print("Succes");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookingTable(),
+                          ),
+                        );
+                      } else {
+                        showErrorDialog(context, "Failed To Save Booking");
+                      }
+
                       //We are going to create a user
                     }
                   },

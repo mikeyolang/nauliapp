@@ -1,12 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:nauliapp/Common/Widgets/nav_root.dart';
+import 'package:nauliapp/Features/Authentication/auth_service.dart';
+import 'package:nauliapp/Utils/Dialogs/error.dart';
 
 class Otp extends StatefulWidget {
-  const Otp({super.key});
+  const Otp({super.key, required this.phoneNumber, });
+  final String phoneNumber;
   @override
   _OtpState createState() => _OtpState();
 }
 
 class _OtpState extends State<Otp> {
+  final TextEditingController _otpController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,9 +62,9 @@ class _OtpState extends State<Otp> {
               const SizedBox(
                 height: 10,
               ),
-              const Text(
-                "Enter the code sent to your number",
-                style: TextStyle(
+              Text(
+                "Enter the code sent to the number ${widget.phoneNumber}",
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.black38,
@@ -78,22 +85,50 @@ class _OtpState extends State<Otp> {
                   children: [
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            child: Row(
-                              children: [
-                                _textFieldOTP(first: true, last: false),
-                                _textFieldOTP(first: false, last: false),
-                                _textFieldOTP(first: false, last: false),
-                                _textFieldOTP(first: false, last: false),
-                                _textFieldOTP(first: false, last: true),
-                              ],
+                      // child: Row(
+                      //   mainAxisAlignment: MainAxisAlignment.start,
+                      //   children: [
+                      //     Container(
+                      //       padding: const EdgeInsets.all(4),
+                      //       child: Row(
+                      //         children: [
+                      //           _textFieldOTP(first: true, last: false),
+                      //           _textFieldOTP(first: false, last: false),
+                      //           _textFieldOTP(first: false, last: false),
+                      //           _textFieldOTP(first: false, last: false),
+                      //           _textFieldOTP(first: false, last: true),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+                      child: Container(
+                        margin: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                          border:
+                              Border.all(color: Colors.black.withOpacity(.2)),
+                        ),
+                        child: TextFormField(
+                          keyboardType: TextInputType.phone,
+                          controller: _otpController,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Verification code is required";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue),
                             ),
+                            border: InputBorder.none,
+                            hintText: "Enter the verification code here",
                           ),
-                        ],
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -102,7 +137,26 @@ class _OtpState extends State<Otp> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          final phone = widget.phoneNumber;
+                          final code = _otpController.text.trim();
+                          final responseResult =
+                              await AuthService().verifyPhone(phone, code);
+                          bool isSuccessful = responseResult['success'];
+                          if (isSuccessful) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const NavBarRoots(),
+                              ),
+                            );
+                          } else {
+                            showErrorDialog(
+                              context,
+                              "Verification Failed. Kindly Check the verification code and try again.",
+                            );
+                          }
+                        },
                         style: ButtonStyle(
                           foregroundColor:
                               MaterialStateProperty.all<Color>(Colors.white),
@@ -142,14 +196,17 @@ class _OtpState extends State<Otp> {
               const SizedBox(
                 height: 18,
               ),
-              const Text(
-                "Resend New Code",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
+              TextButton(
+                onPressed: () {},
+                child: const Text(
+                  "Resend New Code",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),

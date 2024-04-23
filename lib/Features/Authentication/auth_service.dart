@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -30,7 +32,10 @@ class AuthService {
 
       if (response.statusCode == 200) {
         // Assuming the API sends the verification code upon successful registration
-        return {'success': true, 'data': json.decode(response.body)};
+        return {
+          'success': true,
+          'data': json.decode(response.body),
+        };
       } else {
         return {
           'success': false,
@@ -73,14 +78,8 @@ class AuthService {
               'Failed to sign in with status code: ${response.statusCode}'
         };
       }
-    } on SocketException {
-      return {'success': false, 'message': 'No Internet connection'};
-    } on HttpException {
-      return {'success': false, 'message': 'Couldnt find the post'};
-    } on FormatException {
-      return {'success': false, 'message': 'Bad response format'};
     } catch (e) {
-      return {'success': false, 'message': 'Unexpected error: $e'};
+      throw Exception('Failed to sign in with unexpected error: $e');
     }
   }
 
@@ -93,7 +92,7 @@ class AuthService {
         headers: <String, String>{
           'Content-Type': 'application/json',
           // Use the token received upon login for authorization
-          'Authorization': _userToken != null ? 'Bearer $_userToken' : '',
+          // 'Authorization': _userToken != null ? 'Bearer $_userToken' : '',
         },
         body: jsonEncode(<String, String>{
           'phone': phone,
@@ -118,6 +117,109 @@ class AuthService {
       return {'success': false, 'message': 'Bad response format'};
     } catch (e) {
       return {'success': false, 'message': 'Unexpected error: $e'};
+    }
+  }
+
+  Future<Map<String, dynamic>> saveBookingRequest({
+    String choice = 'self',
+    required String travelDate,
+    required String to,
+    required String time,
+    required int seats,
+    required String pickUp,
+  }) async {
+    // API endpoint
+    String apiUrl = 'https://booking.nauli.co.ke/api/v1/booking/save';
+
+    // Prepare the data to be sent in the request body
+    Map<String, String> requestData = {
+      'choice': choice,
+      'travel_date': travelDate,
+      'to': to,
+      'time': time,
+      'seats': seats.toString(),
+      'pick_up': pickUp,
+    };
+
+    // Encode the data to JSON
+    String requestBody = json.encode(requestData);
+
+    try {
+      // Make POST request
+      final http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          // Include the token in the request headers (replace `_userToken` with your token)
+          'Authorization': 'Bearer $_userToken',
+        },
+        body: requestBody,
+      );
+
+      // Check the response status
+      if (response.statusCode == 200) {
+        print(response.body);
+        return {
+          'success': true,
+          'data': json.decode(response.body),
+        };
+      } else {
+        // Request failed with an error status code
+        print(
+            'Booking request failed with status code: ${response.statusCode}');
+        print('Response: ${response.body}');
+        // Handle the error (e.g., show an error message to the user)
+        return {
+          'success': false,
+          'message':
+              'Booking request failed with status code: ${response.statusCode}',
+        };
+      }
+    } on SocketException {
+      return {'success': false, 'message': 'No Internet connection'};
+    } on HttpException {
+      return {'success': false, 'message': 'Couldn\'t find the post'};
+    } on FormatException {
+      return {'success': false, 'message': 'Bad response format'};
+    } catch (e) {
+      return {'success': false, 'message': 'Unexpected error: $e'};
+    }
+  }
+
+  Future<List<dynamic>> getBookingData() async {
+    // API endpoint
+    String apiUrl = 'https://booking.nauli.co.ke/api/v1/bookings';
+
+    try {
+      // Make GET request
+      final http.Response response = await http.get(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_userToken'
+        },
+      );
+
+      // Check the response status
+      if (response.statusCode == 200) {
+        print('Get booking data successful!');
+        // Parse the response body
+        Map<String, dynamic> responseBody = json.decode(response.body);
+        // Get the list of bookings
+        List<dynamic> bookings = responseBody['bookings'];
+        print('Bookings: $bookings');
+        return bookings;
+      } else {
+        // Request failed with an error status code
+        print(
+            'Get booking data failed with status code: ${response.statusCode}');
+        print('Response: ${response.body}');
+        // Handle the error (e.g., show an error message to the user)
+        return [];
+      }
+    } catch (e) {
+      print('Error getting booking data: $e');
+      return [];
     }
   }
 }
