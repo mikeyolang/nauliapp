@@ -114,7 +114,7 @@ class _BookingFormState extends State<BookingForm> {
         setState(() {
           _costPerSeat = cost;
           vehicles = List<Map<String, dynamic>>.from(vehicles);
-          _selectedVehicle = null; // Reset selected vehicle
+          // _selectedVehicle = null; // Reset selected vehicle
 
           // Clear the dropdown items
           _dropdownMenuItems.clear();
@@ -362,7 +362,7 @@ class _BookingFormState extends State<BookingForm> {
                   value: _selectedVehicle,
                   onChanged: (newValue) {
                     setState(() {
-                      _selectedVehicle = newValue;
+                      // _selectedVehicle = newValue;
                     });
                   },
                   items: _dropdownMenuItems,
@@ -450,29 +450,20 @@ class _BookingFormState extends State<BookingForm> {
                       final date =
                           DateFormat("yyyy-MM-dd").format(selectedDate);
 
-                      // final totalCosts = cost * numberOfSeats;
-                      final authService = AuthService();
-                      final responseResult =
-                          await authService.saveBookingRequest(
-                        travelDate: date,
+                      final AuthService authService = AuthService();
+                      final responseResult = await authService.saveBooking(
+                        travel_date: date,
                         to: routeId!,
-                        time: _selectedVehicle!,
+                        time: "02:00",
                         seats: numberOfSeats,
-                        pickUp: pickUpLocation,
+                        pick_up: pickUpLocation,
                       );
                       bool isSuccess = responseResult['success'];
                       if (isSuccess) {
-                        print("Succes");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const BookingTable(),
-                          ),
-                        );
+                        showErrorDialog(context, "Rewuest Success");
                       } else {
-                        showErrorDialog(context, "Failed To Save Booking");
+                        showErrorDialog(context, "Try Some othe time");
                       }
-
                       //We are going to create a user
                     }
                   },

@@ -120,72 +120,145 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> saveBookingRequest({
-    String choice = 'self',
-    required String travelDate,
-    required String toRouteId,
+  Future<Map<String, dynamic>> saveBooking({
+    String choice = "self",
+    required String travel_date,
+    required int to,
     required String time,
     required String seats,
-    required String pickUp,
+    required String pick_up,
   }) async {
-    // API endpoint
-    String apiUrl = 'https://booking.nauli.co.ke/api/v1/booking/save';
-
-    // Prepare the data to be sent in the request body
-    Map<String, String> requestData = {
-      'choice': choice,
-      'travel_date': travelDate,
-      'to': toRouteId,
-      'time': time,
-      'seats': seats,
-      'pick_up': pickUp,
-    };
-
-    // Encode the data to JSON
-    String requestBody = json.encode(requestData);
-    const token = "76|hW4NzC9gPzCqOBmT1Fq4pj4CdlHIhgqc0pZPUBok5d081b4f";
-
+    var saveBookingUrl = "https://booking.nauli.co.ke/api/v1/booking/save";
     try {
-      // Make POST request
-      final http.Response response = await http.post(
-        Uri.parse(apiUrl),
+      final response = await http.post(
+        Uri.parse(saveBookingUrl),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          // Include the token in the request headers (replace `_userToken` with your token)
-          'Authorization': 'Bearer $token',
+          'Authorization': 'Bearer $_userToken',
         },
-        body: requestBody,
+        body: jsonEncode(<String, dynamic>{
+          'choice': choice,
+          'travel_date ': travel_date,
+          'to': to.toString(),
+          'time': time,
+          'seats': seats,
+          'pick_up': pick_up
+        }),
       );
 
-      // Check the response status
       if (response.statusCode == 200) {
-        print(response.body);
+        // Assuming the API sends the verification code upon successful registration
         return {
           'success': true,
           'data': json.decode(response.body),
         };
       } else {
-        // Request failed with an error status code
-        print(
-            'Booking request failed with status code: ${response.statusCode}');
-        print('Response: ${response.body}');
-        // Handle the error (e.g., show an error message to the user)
         return {
           'success': false,
           'message':
-              'Booking request failed with status code: ${response.statusCode}',
+              'Failed to sign up with status code: ${response.statusCode}'
         };
       }
     } on SocketException {
       return {'success': false, 'message': 'No Internet connection'};
     } on HttpException {
-      return {'success': false, 'message': 'Couldn\'t find the post'};
+      return {'success': false, 'message': 'Couldnt find the post'};
     } on FormatException {
       return {'success': false, 'message': 'Bad response format'};
     } catch (e) {
       return {'success': false, 'message': 'Unexpected error: $e'};
     }
   }
+
+  // Future<Map<String, dynamic>> saveBookingRequest({
+  //   String choice = 'self',
+  //   required String travelDate,
+  //   required int toRouteId,
+  //   required String time,
+  //   required String seats,
+  //   required String pickUp,
+  // }) async {
+  //   // Ensure that a token is available
+  //   if (_userToken == null) {
+  //     return {
+  //       'success': false,
+  //       'message': 'User token is not available. Please sign in first.'
+  //     };
+  //   }
+
+  //   // API endpoint
+  //   String apiUrl = 'https://booking.nauli.co.ke/api/v1/booking/save';
+
+  //   // Prepare the data to be sent in the request body
+  //   Map<String, dynamic> requestData = {
+  //     'choice': choice,
+  //     'travel_date': travelDate,
+  //     'to': toRouteId.toString(), // Convert toRouteId to string
+  //     'time': time,
+  //     'seats': seats,
+  //     'pick_up': pickUp,
+  //   };
+
+  //   // Encode the data to JSON
+  //   String requestBody = json.encode(requestData);
+
+  //   try {
+  //     // Make POST request with the user token
+  //     final http.Response response = await http.post(
+  //       Uri.parse(apiUrl),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json',
+  //         // Include the user token in the request headers
+  // 'Authorization': 'Bearer $_userToken',
+  //       },
+  //       body: requestBody,
+  //     );
+
+  //     // Check the response status
+  //     if (response.statusCode == 200) {
+  //       // Parse the JSON response
+  //       Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+  //       // Check if the booking was successful
+  //       if (jsonResponse.containsKey('success') &&
+  //           jsonResponse['success'] == true) {
+  //         print("Booked Successfully");
+  //         return {
+  //           'success': true,
+  //           'data': jsonResponse['data'], // Return specific data if needed
+  //         };
+  //       } else {
+  //         print('Booking request failed: ${jsonResponse['message']}');
+  //         return {
+  //           'success': false,
+  //           'message': jsonResponse['message'] ?? 'Unknown error occurred',
+  //         };
+  //       }
+  //     } else {
+  //       // Request failed with an error status code
+  //       print(
+  //           'Booking request failed with status code: ${response.statusCode}');
+  //       print('Response: ${response.body}');
+  //       return {
+  //         'success': false,
+  //         'message':
+  //             'Booking request failed with status code: ${response.statusCode}',
+  //       };
+  //     }
+  //   } on SocketException {
+  //     // No Internet connection
+  //     return {'success': false, 'message': 'No Internet connection'};
+  //   } on HttpException {
+  //     // HTTP request error
+  //     return {'success': false, 'message': 'Couldn\'t find the post'};
+  //   } on FormatException {
+  //     // Response format error
+  //     return {'success': false, 'message': 'Bad response format'};
+  //   } catch (e) {
+  //     // Other unexpected errors
+  //     return {'success': false, 'message': 'Unexpected error: $e'};
+  //   }
+  // }
 
   Future<List<dynamic>> getBookingData() async {
     // API endpoint
@@ -223,8 +296,9 @@ class AuthService {
       return [];
     }
   }
-   Future<List<Map<String, dynamic>>> fetchBookings() async {
-     String bearerToken =_userToken!;
+
+  Future<List<Map<String, dynamic>>> fetchBookings() async {
+    String bearerToken = _userToken!;
     const String apiUrl = 'https://booking.nauli.co.ke/api/v1/bookings';
 
     try {
@@ -262,7 +336,7 @@ class AuthService {
   }
 
   Future<void> makePayment(int bookingId) async {
-     String bearerToken = _userToken!;
+    String bearerToken = _userToken!;
     final String apiUrl =
         'https://booking.nauli.co.ke/api/v1/make_payment/$bookingId';
 
