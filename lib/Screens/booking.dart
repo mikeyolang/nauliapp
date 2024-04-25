@@ -1,5 +1,4 @@
-// ignore_for_file: avoid_print, unused_field
-
+// ignore_for_file: avoid_print, unused_fiel
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nauliapp/Features/Authentication/auth_service.dart';
@@ -30,10 +29,11 @@ class _BookingFormState extends State<BookingForm> {
   List<String> _toRoutes = [];
   String? _selectedToRoute;
   String? _costPerSeat;
-  String? _datePicked;
+
   int? routeId;
   String? vehicles;
   String? _selectedVehicle;
+  final List<DropdownMenuItem> _dropdownMenuItems = [];
   // final String _pickUpLocation = 'Office';
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -115,6 +115,21 @@ class _BookingFormState extends State<BookingForm> {
           _costPerSeat = cost;
           vehicles = List<Map<String, dynamic>>.from(vehicles);
           _selectedVehicle = null; // Reset selected vehicle
+
+          // Clear the dropdown items
+          _dropdownMenuItems.clear();
+
+          // Add a dropdown item for each vehicle
+          for (var vehicle in vehicles) {
+            _dropdownMenuItems.add(
+              DropdownMenuItem(
+                value: vehicle,
+                child: Text(
+                  'Time: ${vehicle['time']} Hours, ${vehicle['capacity']} seats remaining',
+                ),
+              ),
+            );
+          }
         });
 
         // Process the data as needed
@@ -124,7 +139,8 @@ class _BookingFormState extends State<BookingForm> {
         // Print vehicle details
         for (var vehicle in vehicles) {
           print(
-              'Vehicle ID: ${vehicle['id']}, Time: ${vehicle['time']}, Capacity: ${vehicle['capacity']}, Count: ${vehicle['count']}');
+            'Vehicle ID: ${vehicle['id']}, Time: ${vehicle['time']}, Capacity: ${vehicle['capacity']}, Count: ${vehicle['count']}',
+          );
         }
       } else {
         // Handle any errors
@@ -147,7 +163,8 @@ class _BookingFormState extends State<BookingForm> {
 
         setState(() {
           _toRoutes = routes.map((route) => route['name'].toString()).toList();
-          routeId = routes.map((route) => route['id'] as int).toList().first;
+          routeId =
+              routes.map<int>((route) => route['id'] as int).toList().first;
         });
       } else {
         throw Exception('Failed to load to routes');
@@ -202,6 +219,7 @@ class _BookingFormState extends State<BookingForm> {
               Row(
                 children: <Widget>[
                   Radio(
+                    activeColor: Colors.blue,
                     value: "Self",
                     groupValue: "",
                     onChanged: (value) => {
@@ -245,7 +263,9 @@ class _BookingFormState extends State<BookingForm> {
                   ),
                   onTap: () {
                     _selectDate(context);
-                    _datePicked = DateFormat("yyyy-MM-dd").format(selectedDate);
+                    final datePicked =
+                        DateFormat("yyyy-MM-dd").format(selectedDate);
+                    print(datePicked);
                   },
                 ),
               ),
@@ -307,12 +327,13 @@ class _BookingFormState extends State<BookingForm> {
                     setState(() {
                       fetchData(
                         routeId!,
-                        _datePicked!,
+                        DateFormat("yyyy-MM-dd").format(selectedDate),
                       );
                     });
                   },
                 ),
               ),
+
               Container(
                 margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -321,6 +342,31 @@ class _BookingFormState extends State<BookingForm> {
                 ),
                 padding: const EdgeInsets.only(left: 10),
                 child: Text('Cost per seat: $_costPerSeat'),
+              ),
+              Container(
+                height: 55,
+                width: MediaQuery.of(context).size.width * .9,
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                padding: const EdgeInsets.only(left: 12),
+                child: DropdownButtonFormField(
+                  decoration: const InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
+                  ),
+                  hint: const Text('Choose Time'),
+                  value: _selectedVehicle,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedVehicle = newValue;
+                    });
+                  },
+                  items: _dropdownMenuItems,
+                ),
               ),
               Container(
                 margin: const EdgeInsets.all(12),
@@ -345,20 +391,6 @@ class _BookingFormState extends State<BookingForm> {
                   keyboardType: TextInputType.number,
                 ),
               ),
-              // Container(
-              //   margin: const EdgeInsets.all(12),
-              //   decoration: BoxDecoration(
-              //     border: Border.all(color: Colors.grey),
-              //     borderRadius: BorderRadius.circular(5),
-              //   ),
-              //   padding: const EdgeInsets.only(left: 10),
-              //   child: TextField(
-              //     controller: _travelDateController,
-              //     decoration: const InputDecoration(
-              //       labelText: 'Enter travel date (YYYY-MM-DD)',
-              //     ),
-              //   ),
-              // ),
 
               Container(
                 margin: const EdgeInsets.all(12),
@@ -415,19 +447,18 @@ class _BookingFormState extends State<BookingForm> {
                     if (_formKey.currentState!.validate()) {
                       final numberOfSeats = _seatsController.text;
                       final pickUpLocation = _pickUpController.text;
-                      final date = _datePicked;
-
-                      final toRoute = _selectedToRoute;
+                      final date =
+                          DateFormat("yyyy-MM-dd").format(selectedDate);
 
                       // final totalCosts = cost * numberOfSeats;
                       final authService = AuthService();
                       final responseResult =
                           await authService.saveBookingRequest(
+                        travelDate: date,
+                        to: routeId!,
+                        time: _selectedVehicle!,
+                        seats: numberOfSeats,
                         pickUp: pickUpLocation,
-                        seats: 12,
-                        time: "02:00",
-                        to: toRoute!,
-                        travelDate: date!,
                       );
                       bool isSuccess = responseResult['success'];
                       if (isSuccess) {
@@ -435,7 +466,7 @@ class _BookingFormState extends State<BookingForm> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BookingTable(),
+                            builder: (context) => const BookingTable(),
                           ),
                         );
                       } else {

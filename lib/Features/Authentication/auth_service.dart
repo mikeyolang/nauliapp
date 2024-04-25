@@ -70,7 +70,7 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         _userToken = data['token']; // Save the token for future requests
-        return {'success': true, 'data': data};
+        return {'success': true, 'data': data, "Token": _userToken};
       } else {
         return {
           'success': false,
@@ -123,9 +123,9 @@ class AuthService {
   Future<Map<String, dynamic>> saveBookingRequest({
     String choice = 'self',
     required String travelDate,
-    required String to,
+    required String toRouteId,
     required String time,
-    required int seats,
+    required String seats,
     required String pickUp,
   }) async {
     // API endpoint
@@ -135,14 +135,15 @@ class AuthService {
     Map<String, String> requestData = {
       'choice': choice,
       'travel_date': travelDate,
-      'to': to,
+      'to': toRouteId,
       'time': time,
-      'seats': seats.toString(),
+      'seats': seats,
       'pick_up': pickUp,
     };
 
     // Encode the data to JSON
     String requestBody = json.encode(requestData);
+    const token = "76|hW4NzC9gPzCqOBmT1Fq4pj4CdlHIhgqc0pZPUBok5d081b4f";
 
     try {
       // Make POST request
@@ -151,7 +152,7 @@ class AuthService {
         headers: <String, String>{
           'Content-Type': 'application/json',
           // Include the token in the request headers (replace `_userToken` with your token)
-          'Authorization': 'Bearer $_userToken',
+          'Authorization': 'Bearer $token',
         },
         body: requestBody,
       );
@@ -220,6 +221,67 @@ class AuthService {
     } catch (e) {
       print('Error getting booking data: $e');
       return [];
+    }
+  }
+   Future<List<Map<String, dynamic>>> fetchBookings() async {
+     String bearerToken =_userToken!;
+    const String apiUrl = 'https://booking.nauli.co.ke/api/v1/bookings';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Authorization': 'Bearer $bearerToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
+        List<dynamic> bookingsData = jsonResponse['bookings']['data'];
+
+        List<Map<String, dynamic>> bookingsList = [];
+        for (var booking in bookingsData) {
+          Map<String, dynamic> bookingInfo = {
+            'id': booking['id'],
+            'number': booking['id'],
+            'reference': booking['reference_no'],
+            'travelDate': booking['travel_date'],
+            'seats': booking['seats'],
+            'amount': booking['amount'],
+          };
+          bookingsList.add(bookingInfo);
+        }
+
+        return bookingsList;
+      } else {
+        throw Exception('Failed to load bookings');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  Future<void> makePayment(int bookingId) async {
+     String bearerToken = _userToken!;
+    final String apiUrl =
+        'https://booking.nauli.co.ke/api/v1/make_payment/$bookingId';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Authorization': 'Bearer $bearerToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Payment successful, handle response accordingly
+        print('Payment successful');
+      } else {
+        throw Exception('Failed to make payment');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
     }
   }
 }

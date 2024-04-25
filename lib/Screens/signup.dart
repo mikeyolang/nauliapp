@@ -270,50 +270,50 @@ class _SignUpState extends State<SignUp> {
                     ),
                     child: TextButton(
                         onPressed: () async {
-                          // final firstName = firstNameController.text.toString();
-                          // final lastName = lastNameController.text.toString();
-                          // final phone = phoneController.text.toString();
-                          // final password = passwordController.text.toString();
-                          // final confirmPassword =
-                          //     confirmPasswordController.text.toString();
-                          // final authService = AuthService();
-                          // Map<String, dynamic> responseResult =
-                          //     await authService.signUp(
-                          //   phone,
-                          //   firstName,
-                          //   lastName,
-                          //   password,
-                          //   confirmPassword,
-                          // );
-                          // print('Sign-Up Response: ${responseResult['data']}');
-                          // bool isSuccess = responseResult['success'];
-                          // if (formKey.currentState!.validate()) {
-                          //   if (_agreedToTerms) {
-                          //     if (isSuccess) {
-                          //       Navigator.push(
-                          //         context,
-                          //         MaterialPageRoute(
-                          //           builder: (context) => Otp(
-                          //             phoneNumber: phone,
-                          //           ),
-                          //         ),
-                          //       );
-                          //     } else {
-                          //       showErrorDialog(
-                          //         context,
-                          //         "An error occurred while signing up. Please try again. Try using a different phone number.",
-                          //       );
-                          //     }
-                          //   }
-                          // }
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Otp(
-                                phoneNumber: phoneController.text,
-                              ),
-                            ),
+                          final firstName = firstNameController.text.toString();
+                          final lastName = lastNameController.text.toString();
+                          final phone = phoneController.text.toString();
+                          final password = passwordController.text.toString();
+                          final confirmPassword =
+                              confirmPasswordController.text.toString();
+                          final authService = AuthService();
+                          Map<String, dynamic> responseResult =
+                              await authService.signUp(
+                            phone,
+                            firstName,
+                            lastName,
+                            password,
+                            confirmPassword,
                           );
+                          print('Sign-Up Response: ${responseResult['data']}');
+                          bool isSuccess = responseResult['success'];
+                          if (formKey.currentState!.validate()) {
+                            if (_agreedToTerms) {
+                              if (isSuccess) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Otp(
+                                      phoneNumber: phone,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                showErrorDialog(
+                                  context,
+                                  "An error occurred while signing up. Please try again. Try using a different phone number.",
+                                );
+                              }
+                            }
+                          }
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => Otp(
+                          //       phoneNumber: phoneController.text,
+                          //     ),
+                          //   ),
+                          // );
                         },
                         child: const Text(
                           "SIGN UP",

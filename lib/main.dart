@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       title: 'Nauli App',
       debugShowCheckedModeBanner: false,
-      home: OnboardingScreen(),
+      home: BookingForm(),
     );
   }
 }
