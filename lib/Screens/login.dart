@@ -20,7 +20,6 @@ class _LoginScreenState extends State<LoginScreen> {
   //TextEditing controller to control the text when we enter into it
   final phoneNumberController = TextEditingController();
   final passwordController = TextEditingController();
-
   //A bool variable for show and hide password
   bool isVisible = false;
 
@@ -145,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                           bool isSuccess = responseResult['success'];
                           if (isSuccess) {
+                           
                             Navigator.push(
                               context,
                               MaterialPageRoute(

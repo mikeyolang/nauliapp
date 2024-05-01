@@ -7,7 +7,7 @@ Future<bool> showErrorDialog(
 ) {
   return showGenericErrorDialog(
     context: context,
-    title: "Authentication Error",
+    title: "An Error Has Occured",
     content: text,
     optionBuilder: () => {
       "Ok": null,

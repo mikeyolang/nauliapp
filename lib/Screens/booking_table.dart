@@ -3,45 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:nauliapp/Features/Authentication/auth_service.dart';
 
-// Future<List<Map<String, dynamic>>> _fetchBookings() async {
-//   const String bearerToken =
-//       '76|hW4NzC9gPzCqOBmT1Fq4pj4CdlHIhgqc0pZPUBok5d081b4f';
-//   const String apiUrl = 'https://booking.nauli.co.ke/api/v1/bookings';
-
-//   try {
-//     final response = await http.get(
-//       Uri.parse(apiUrl),
-//       headers: <String, String>{
-//         'Authorization': 'Bearer $bearerToken',
-//       },
-//     );
-
-//     if (response.statusCode == 200) {
-//       Map<String, dynamic> jsonResponse = json.decode(response.body);
-//       List<dynamic> bookingsData = jsonResponse['bookings']['data'];
-
-//       List<Map<String, dynamic>> bookingsList = [];
-//       for (var booking in bookingsData) {
-//         Map<String, dynamic> bookingInfo = {
-//           'id': booking['id'],
-//           'number': booking['id'],
-//           'reference': booking['reference_no'],
-//           'travelDate': booking['travel_date'],
-//           'seats': booking['seats'],
-//           'amount': booking['amount'],
-//         };
-//         bookingsList.add(bookingInfo);
-//       }
-
-//       return bookingsList;
-//     } else {
-//       throw Exception('Failed to load bookings');
-//     }
-//   } catch (e) {
-//     throw Exception('Error: $e');
-//   }
-// }
-
 // Future<void> _makePayment(int bookingId) async {
 //   const String bearerToken =
 //       '76|hW4NzC9gPzCqOBmT1Fq4pj4CdlHIhgqc0pZPUBok5d081b4f';
@@ -77,8 +38,7 @@ class BookingTable extends StatefulWidget {
 class _BookingTableState extends State<BookingTable> {
   @override
   void initState() {
-    AuthService().getBookingData();
-    print("Data Gotten");
+    AuthService().fetchAllBookings();
     super.initState();
   }
 
@@ -90,7 +50,7 @@ class _BookingTableState extends State<BookingTable> {
         title: const Text('Customer Bookings'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: authservice.fetchBookings(),
+        future: authservice.fetchAllBookings(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

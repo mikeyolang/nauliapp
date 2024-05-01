@@ -16,10 +16,11 @@ class _NavBarRootsState extends State<NavBarRoots> {
     //Home Screen
     const HomePageScreen(),
     //  Bookings Screen
-    BookingTable()
+    const BookingTable(),
     //  Profile Screen
-
+    Container(),
     //  Settings screen
+    Container(),
   ];
   @override
   Widget build(BuildContext context) {

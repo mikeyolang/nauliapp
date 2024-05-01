@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, unused_fiel
+// ignore_for_file: avoid_print, unused_fiel, unnecessary_string_interpolations, use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nauliapp/Features/Authentication/auth_service.dart';
@@ -23,6 +23,9 @@ class _BookingFormState extends State<BookingForm> {
   final TextEditingController _costController = TextEditingController();
   final TextEditingController _seatsController = TextEditingController();
   final TextEditingController _pickUpController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _secondNameController = TextEditingController();
 
   List<String> _fromRoutes = [];
   String? _selectedFromRoute;
@@ -30,11 +33,41 @@ class _BookingFormState extends State<BookingForm> {
   String? _selectedToRoute;
   String? _costPerSeat;
 
-  int? routeId;
+  int? _selectedRouteId;
+  Map<String, int> _routeIdMap = {};
   String? vehicles;
   String? _selectedVehicle;
   final List<DropdownMenuItem> _dropdownMenuItems = [];
-  // final String _pickUpLocation = 'Office';
+
+  String? _selectedTime;
+  int _selectedCapacity = 0;
+
+  bool isSelfSelected = true;
+  String? firstName;
+  String? secondName;
+
+  // Function to handle dropdown menu item selection
+  void _handleVehicleSelection(dynamic newValue) {
+    setState(() {
+      _selectedCapacity = newValue['capacity'];
+    });
+  }
+
+  // Validate number of seats against capacity
+  String? _validateSeats(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter number of seats';
+    }
+    final int? seats = int.tryParse(value);
+    if (seats == null || seats <= 0) {
+      return 'Please enter a valid number of seats';
+    }
+    if (seats > _selectedCapacity) {
+      return 'Number of seats cannot exceed vehicle capacity ($_selectedCapacity)';
+    }
+    return null;
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -92,7 +125,7 @@ class _BookingFormState extends State<BookingForm> {
     }
   }
 
-  Future<void> fetchData(int routeId, String travelDate) async {
+  Future<void> fetchCostPerSeat(int routeId, String travelDate) async {
     // Construct the URL by replacing routeId and travelDate in the endpoint
     String url =
         'https://booking.nauli.co.ke/api/v1/fetch-cost/$routeId/$travelDate';
@@ -110,6 +143,7 @@ class _BookingFormState extends State<BookingForm> {
         String cost = responseData['cost'];
         List<dynamic> vehicles = responseData['vehicles'];
         String date = responseData['date'];
+        // _selectedTime = responseData["vehicles"]["time"];
 
         setState(() {
           _costPerSeat = cost;
@@ -160,11 +194,22 @@ class _BookingFormState extends State<BookingForm> {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         List<dynamic> routes = data['routes'];
+        List<String> routeNamesList = [];
+
+// Create a map to associate each route with its corresponding routeId
+        Map<String, int> routeIdMap = {};
+        for (var route in routes) {
+          String routeName = route['name'].toString();
+          int routeId = route['id'] as int;
+          routeNamesList.add(routeName); // Add routeName to list
+          routeIdMap[routeName] = routeId;
+          // routeIdMap[route['name']] = route['id'];
+        }
+        // Convert Set back to List and sort alphabetically
 
         setState(() {
-          _toRoutes = routes.map((route) => route['name'].toString()).toList();
-          routeId =
-              routes.map<int>((route) => route['id'] as int).toList().first;
+          _toRoutes = routeIdMap.keys.toList();
+          _routeIdMap = routeIdMap;
         });
       } else {
         throw Exception('Failed to load to routes');
@@ -202,7 +247,7 @@ class _BookingFormState extends State<BookingForm> {
           1,
         ),
         title: const Text(
-          'Booking Your Seat',
+          'Book Your Seat',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -220,29 +265,103 @@ class _BookingFormState extends State<BookingForm> {
                 children: <Widget>[
                   Radio(
                     activeColor: Colors.blue,
-                    value: "Self",
-                    groupValue: "",
+                    value: true,
+                    groupValue: isSelfSelected,
                     onChanged: (value) => {
                       setState(() {
-                        _selectedRoute = value;
+                        // _selectedRoute = value;
+                        isSelfSelected = value as bool;
                       })
                     },
                   ),
                   const Text("Self"),
                   Radio(
-                    value: "Other",
-                    groupValue: "",
+                    value: false,
+                    groupValue: isSelfSelected,
                     onChanged: (value) => {
                       setState(() {
-                        _selectedRoute = value;
+                        // _selectedRoute = value;
+                        isSelfSelected = value as bool;
                       })
                     },
                   ),
                   const Text("Other"),
                 ],
               ),
+              if (!isSelfSelected)
+                Column(
+                  children: [
+                    Container(
+                      height: 55,
+                      width: MediaQuery.of(context).size.width * .9,
+                      padding: const EdgeInsets.only(bottom: 0),
+                      margin: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: TextFormField(
+                        controller: _firstNameController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Enter First Name",
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 55,
+                      width: MediaQuery.of(context).size.width * .9,
+                      margin: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: TextFormField(
+                        controller: _secondNameController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Enter Second Name",
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 55,
+                      width: MediaQuery.of(context).size.width * .9,
+                      margin: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: TextFormField(
+                        controller: _phoneController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Enter Phone Number",
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                        ),
+                        // onChanged: (value) {
+                        //   setState(() {
+                        //     secondName = value;
+                        //   });
+                        // },
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(
+                height: 15,
+              ),
               Container(
-                margin: const EdgeInsets.only(left: 12, right: 12),
+                width: MediaQuery.of(context).size.width * .9,
+                margin: const EdgeInsets.only(left: 10, right: 12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(5),
@@ -251,9 +370,9 @@ class _BookingFormState extends State<BookingForm> {
                   title: Text(
                     'Travel Date: ${DateFormat("yyyy-MM-dd").format(selectedDate)}',
                     style: const TextStyle(
-                      color: Colors.black,
+                      color: Colors.black54,
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w400,
                       fontFamily: 'Roboto',
                     ),
                   ),
@@ -277,7 +396,6 @@ class _BookingFormState extends State<BookingForm> {
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(5),
                 ),
-                padding: const EdgeInsets.only(left: 12),
                 child: DropdownButtonFormField(
                   decoration: const InputDecoration(
                     focusedBorder: OutlineInputBorder(
@@ -286,11 +404,11 @@ class _BookingFormState extends State<BookingForm> {
                   ),
                   hint: const Text('Choose From'),
                   value: _selectedFromRoute,
-                  onChanged: (newValue) {
+                  onChanged: (newValue) async {
                     setState(() {
                       _selectedFromRoute = newValue;
-                      _getToRoutes(newValue!);
                     });
+                    await _getToRoutes(newValue!);
                   },
                   items:
                       _fromRoutes.map<DropdownMenuItem<String>>((String value) {
@@ -302,12 +420,12 @@ class _BookingFormState extends State<BookingForm> {
                 ),
               ),
               Container(
+                width: MediaQuery.of(context).size.width * .9,
                 margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(5),
                 ),
-                padding: const EdgeInsets.only(left: 12),
                 child: DropdownButtonFormField(
                   decoration: const InputDecoration(
                     focusedBorder: OutlineInputBorder(
@@ -324,23 +442,31 @@ class _BookingFormState extends State<BookingForm> {
                     );
                   }).toList(),
                   onChanged: (newValue) {
+                    _selectedToRoute = newValue;
+                    // Get the selected routeId from the map
+                    _selectedRouteId = _routeIdMap[newValue];
                     setState(() {
-                      fetchData(
-                        routeId!,
+                      fetchCostPerSeat(
+                        _selectedRouteId!,
                         DateFormat("yyyy-MM-dd").format(selectedDate),
                       );
                     });
+                    if (_selectedToRoute != "Choose To") {
+                      print("Hello World");
+                    }
                   },
                 ),
               ),
 
               Container(
+                alignment: Alignment.center,
+                height: 50,
+                width: MediaQuery.of(context).size.width * .9,
                 margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(5),
                 ),
-                padding: const EdgeInsets.only(left: 10),
                 child: Text('Cost per seat: $_costPerSeat'),
               ),
               Container(
@@ -351,7 +477,6 @@ class _BookingFormState extends State<BookingForm> {
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(5),
                 ),
-                padding: const EdgeInsets.only(left: 12),
                 child: DropdownButtonFormField(
                   decoration: const InputDecoration(
                     focusedBorder: OutlineInputBorder(
@@ -360,21 +485,18 @@ class _BookingFormState extends State<BookingForm> {
                   ),
                   hint: const Text('Choose Time'),
                   value: _selectedVehicle,
-                  onChanged: (newValue) {
-                    setState(() {
-                      // _selectedVehicle = newValue;
-                    });
-                  },
+                  onChanged: _handleVehicleSelection,
                   items: _dropdownMenuItems,
                 ),
               ),
               Container(
+                width: MediaQuery.of(context).size.width * .9,
                 margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(5),
                 ),
-                padding: const EdgeInsets.only(left: 10),
+                // padding: const EdgeInsets.only(left: 10),
                 child: TextFormField(
                   controller: _seatsController,
                   decoration: const InputDecoration(
@@ -383,22 +505,24 @@ class _BookingFormState extends State<BookingForm> {
                     ),
                     hintText: "Number of Seats",
                     hintStyle: TextStyle(
-                      color: Colors.black,
+                      color: Colors.black54,
                       fontSize: 15,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w300,
                     ),
                   ),
                   keyboardType: TextInputType.number,
+                  // validator: _validateSeats,
                 ),
               ),
 
               Container(
+                width: MediaQuery.of(context).size.width * .9,
                 margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(5),
                 ),
-                padding: const EdgeInsets.only(left: 10),
+                // padding: const EdgeInsets.only(left: 10),
                 child: TextFormField(
                   controller: _pickUpController,
                   decoration: const InputDecoration(
@@ -407,9 +531,9 @@ class _BookingFormState extends State<BookingForm> {
                     ),
                     hintText: "Pick-Up Location",
                     hintStyle: TextStyle(
-                      color: Colors.black,
+                      color: Colors.black54,
                       fontSize: 15,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w300,
                     ),
                   ),
                 ),
@@ -447,24 +571,59 @@ class _BookingFormState extends State<BookingForm> {
                     if (_formKey.currentState!.validate()) {
                       final numberOfSeats = _seatsController.text;
                       final pickUpLocation = _pickUpController.text;
-                      final date =
+                      String date =
                           DateFormat("yyyy-MM-dd").format(selectedDate);
-
                       final AuthService authService = AuthService();
-                      final responseResult = await authService.saveBooking(
-                        travel_date: date,
-                        to: routeId!,
-                        time: "02:00",
-                        seats: numberOfSeats,
-                        pick_up: pickUpLocation,
-                      );
-                      bool isSuccess = responseResult['success'];
-                      if (isSuccess) {
-                        showErrorDialog(context, "Rewuest Success");
+                      final routeString = _selectedRouteId.toString();
+                      print("Route Id is: $routeString");
+                      print("$_selectedCapacity");
+
+                      if (isSelfSelected) {
+                        final responseResult =
+                            await authService.saveSelfBooking(
+                          travel_date: "2024-05-13",
+                          to: "1",
+                          time: "03:00:00",
+                          seats: "$numberOfSeats",
+                          pick_up: "$pickUpLocation",
+                        );
+                        bool isSuccess = responseResult['success'];
+                        if (isSuccess) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return const BookingTable();
+                              },
+                            ),
+                          );
+                        } else {
+                          showErrorDialog(
+                            context,
+                            "Oops Not Successfull",
+                          );
+                        }
                       } else {
-                        showErrorDialog(context, "Try Some othe time");
+                        if (firstName != null && secondName != null) {
+                          // Additional fields are filled, proceed with booking
+                          authService.saveOtherBooking(
+                            travel_date: "",
+                            to: "",
+                            time: "",
+                            seats: "",
+                            pick_up: "pick_up",
+                            first_name: "",
+                            second_name: "",
+                            phone: "",
+                          );
+                        } else {
+                          // Additional fields are not filled, show error or prompt user
+                          showErrorDialog(
+                            context,
+                            "First name and Second name is required",
+                          );
+                        }
                       }
-                      //We are going to create a user
                     }
                   },
                   child: const Text(

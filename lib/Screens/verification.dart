@@ -113,7 +113,7 @@ class _OtpState extends State<Otp> {
                               Border.all(color: Colors.black.withOpacity(.2)),
                         ),
                         child: TextFormField(
-                          keyboardType: TextInputType.phone,
+                          keyboardType: TextInputType.text,
                           controller: _otpController,
                           validator: (value) {
                             if (value!.isEmpty) {

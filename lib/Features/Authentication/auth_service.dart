@@ -1,10 +1,12 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, non_constant_identifier_names
 
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   final String signUpUrl = 'https://booking.nauli.co.ke/api/v1/register';
   final String loginUrl = 'https://booking.nauli.co.ke/api/v1/login';
   String? _userToken;
@@ -69,7 +71,10 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        _userToken = data['token']; // Save the token for future requests
+        _userToken = data['bdata']['token'];
+        // Store the token securely
+        await secureStorage.write(key: 'userToken', value: _userToken);
+        print(_userToken);
         return {'success': true, 'data': data, "Token": _userToken};
       } else {
         return {
@@ -91,8 +96,6 @@ class AuthService {
         Uri.parse(verifyUrl),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          // Use the token received upon login for authorization
-          // 'Authorization': _userToken != null ? 'Bearer $_userToken' : '',
         },
         body: jsonEncode(<String, String>{
           'phone': phone,
@@ -120,26 +123,30 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> saveBooking({
+  Future<Map<String, dynamic>> saveSelfBooking({
     String choice = "self",
     required String travel_date,
-    required int to,
+    required String to,
     required String time,
     required String seats,
     required String pick_up,
   }) async {
+    // Retrieve the token from secure storage
+    String? userToken = await secureStorage.read(key: 'userToken');
+
     var saveBookingUrl = "https://booking.nauli.co.ke/api/v1/booking/save";
+
     try {
       final response = await http.post(
         Uri.parse(saveBookingUrl),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_userToken',
+          'Authorization': 'Bearer $userToken',
         },
         body: jsonEncode(<String, dynamic>{
           'choice': choice,
-          'travel_date ': travel_date,
-          'to': to.toString(),
+          'travel_date': travel_date,
+          'to': to,
           'time': time,
           'seats': seats,
           'pick_up': pick_up
@@ -170,142 +177,16 @@ class AuthService {
     }
   }
 
-  // Future<Map<String, dynamic>> saveBookingRequest({
-  //   String choice = 'self',
-  //   required String travelDate,
-  //   required int toRouteId,
-  //   required String time,
-  //   required String seats,
-  //   required String pickUp,
-  // }) async {
-  //   // Ensure that a token is available
-  //   if (_userToken == null) {
-  //     return {
-  //       'success': false,
-  //       'message': 'User token is not available. Please sign in first.'
-  //     };
-  //   }
-
-  //   // API endpoint
-  //   String apiUrl = 'https://booking.nauli.co.ke/api/v1/booking/save';
-
-  //   // Prepare the data to be sent in the request body
-  //   Map<String, dynamic> requestData = {
-  //     'choice': choice,
-  //     'travel_date': travelDate,
-  //     'to': toRouteId.toString(), // Convert toRouteId to string
-  //     'time': time,
-  //     'seats': seats,
-  //     'pick_up': pickUp,
-  //   };
-
-  //   // Encode the data to JSON
-  //   String requestBody = json.encode(requestData);
-
-  //   try {
-  //     // Make POST request with the user token
-  //     final http.Response response = await http.post(
-  //       Uri.parse(apiUrl),
-  //       headers: <String, String>{
-  //         'Content-Type': 'application/json',
-  //         // Include the user token in the request headers
-  // 'Authorization': 'Bearer $_userToken',
-  //       },
-  //       body: requestBody,
-  //     );
-
-  //     // Check the response status
-  //     if (response.statusCode == 200) {
-  //       // Parse the JSON response
-  //       Map<String, dynamic> jsonResponse = json.decode(response.body);
-
-  //       // Check if the booking was successful
-  //       if (jsonResponse.containsKey('success') &&
-  //           jsonResponse['success'] == true) {
-  //         print("Booked Successfully");
-  //         return {
-  //           'success': true,
-  //           'data': jsonResponse['data'], // Return specific data if needed
-  //         };
-  //       } else {
-  //         print('Booking request failed: ${jsonResponse['message']}');
-  //         return {
-  //           'success': false,
-  //           'message': jsonResponse['message'] ?? 'Unknown error occurred',
-  //         };
-  //       }
-  //     } else {
-  //       // Request failed with an error status code
-  //       print(
-  //           'Booking request failed with status code: ${response.statusCode}');
-  //       print('Response: ${response.body}');
-  //       return {
-  //         'success': false,
-  //         'message':
-  //             'Booking request failed with status code: ${response.statusCode}',
-  //       };
-  //     }
-  //   } on SocketException {
-  //     // No Internet connection
-  //     return {'success': false, 'message': 'No Internet connection'};
-  //   } on HttpException {
-  //     // HTTP request error
-  //     return {'success': false, 'message': 'Couldn\'t find the post'};
-  //   } on FormatException {
-  //     // Response format error
-  //     return {'success': false, 'message': 'Bad response format'};
-  //   } catch (e) {
-  //     // Other unexpected errors
-  //     return {'success': false, 'message': 'Unexpected error: $e'};
-  //   }
-  // }
-
-  Future<List<dynamic>> getBookingData() async {
-    // API endpoint
-    String apiUrl = 'https://booking.nauli.co.ke/api/v1/bookings';
-
-    try {
-      // Make GET request
-      final http.Response response = await http.get(
-        Uri.parse(apiUrl),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_userToken'
-        },
-      );
-
-      // Check the response status
-      if (response.statusCode == 200) {
-        print('Get booking data successful!');
-        // Parse the response body
-        Map<String, dynamic> responseBody = json.decode(response.body);
-        // Get the list of bookings
-        List<dynamic> bookings = responseBody['bookings'];
-        print('Bookings: $bookings');
-        return bookings;
-      } else {
-        // Request failed with an error status code
-        print(
-            'Get booking data failed with status code: ${response.statusCode}');
-        print('Response: ${response.body}');
-        // Handle the error (e.g., show an error message to the user)
-        return [];
-      }
-    } catch (e) {
-      print('Error getting booking data: $e');
-      return [];
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> fetchBookings() async {
-    String bearerToken = _userToken!;
+  Future<List<Map<String, dynamic>>> fetchAllBookings() async {
     const String apiUrl = 'https://booking.nauli.co.ke/api/v1/bookings';
+    String? userToken = await secureStorage.read(key: 'userToken');
+    print("$userToken");
 
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $bearerToken',
+          'Authorization': 'Bearer $userToken',
         },
       );
 
@@ -335,16 +216,77 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> saveOtherBooking({
+    String choice = "other",
+    required String travel_date,
+    required String to,
+    required String time,
+    required String seats,
+    required String pick_up,
+    required String first_name,
+    required String second_name,
+    required String phone,
+  }) async {
+    // Retrieve the token from secure storage
+    String? userToken = await secureStorage.read(key: 'userToken');
+
+    var saveBookingUrl = "https://booking.nauli.co.ke/api/v1/booking/save";
+
+    try {
+      final response = await http.post(
+        Uri.parse(saveBookingUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $userToken',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'choice': choice,
+          'travel_date': travel_date,
+          'to': to,
+          'time': time,
+          'seats': seats,
+          'pick_up': pick_up,
+          'first_name': first_name,
+          'second_name': second_name,
+          'phone': phone
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Assuming the API sends the verification code upon successful registration
+        return {
+          'success': true,
+          'data': json.decode(response.body),
+        };
+      } else {
+        return {
+          'success': false,
+          'message':
+              'Failed to sign up with status code: ${response.statusCode}'
+        };
+      }
+    } on SocketException {
+      return {'success': false, 'message': 'No Internet connection'};
+    } on HttpException {
+      return {'success': false, 'message': 'Couldnt find the post'};
+    } on FormatException {
+      return {'success': false, 'message': 'Bad response format'};
+    } catch (e) {
+      return {'success': false, 'message': 'Unexpected error: $e'};
+    }
+  }
+
   Future<void> makePayment(int bookingId) async {
-    String bearerToken = _userToken!;
     final String apiUrl =
         'https://booking.nauli.co.ke/api/v1/make_payment/$bookingId';
+    String? userToken = await secureStorage.read(key: 'userToken');
+    print("$userToken");
 
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $bearerToken',
+          'Authorization': 'Bearer $userToken',
         },
       );
 
