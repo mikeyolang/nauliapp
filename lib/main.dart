@@ -8,6 +8,7 @@ import 'package:nauliapp/Screens/signup.dart';
 import 'package:nauliapp/Screens/verification.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       title: 'Nauli App',
       debugShowCheckedModeBanner: false,
-      home: BookingForm(),
+      home: OnboardingScreen(),
     );
   }
 }

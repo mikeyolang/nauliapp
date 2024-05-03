@@ -301,7 +301,7 @@ class _SignUpState extends State<SignUp> {
                               } else {
                                 showErrorDialog(
                                   context,
-                                  "An error occurred while signing up. Please try again. Try using a different phone number.",
+                                  "An error occurred while signing up. Try using a different phone number.",
                                 );
                               }
                             }

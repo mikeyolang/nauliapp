@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:nauliapp/Enums/menu_action.dart';
 import 'package:nauliapp/Screens/booking.dart';
+import 'package:nauliapp/Screens/login.dart';
 import 'package:nauliapp/Utils/Constants/images.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Utils/Dialogs/log_out_alert.dart';
 
 class HomePageScreen extends StatelessWidget {
   const HomePageScreen({super.key});
@@ -68,7 +73,7 @@ class HomePageScreen extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () {
-                        Drawer();
+                        const Drawer();
                       },
                       icon: const Icon(
                         Icons.menu,
@@ -76,20 +81,38 @@ class HomePageScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const Icon(
-                      Icons.notifications,
-                      size: 30,
-                      color: Colors.white,
-                    ),
+                    PopupMenuButton(onSelected: (value) async {
+                      switch (value) {
+                        case MenuAction.logout:
+                          final shouldLogout = await showLogOutDialog(context);
+                          if (shouldLogout) {
+                            SharedPreferences sp =
+                                await SharedPreferences.getInstance();
+
+                            sp.clear();
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginScreen()),
+                            );
+                          }
+                      }
+                    }, itemBuilder: (context) {
+                      return [
+                        const PopupMenuItem<MenuAction>(
+                          value: MenuAction.logout,
+                          child: Text("Log Out"),
+                        ),
+                      ];
+                    }),
                   ],
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: 1, bottom: 8),
                   child: Text(
-                    "Hi Michael",
+                    "Welcome Back",
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.left,
                     style: TextStyle(

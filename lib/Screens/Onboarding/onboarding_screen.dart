@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:nauliapp/Common/Widgets/nav_root.dart';
 import 'package:nauliapp/Screens/login.dart';
 import 'package:nauliapp/Screens/signup.dart';
 import 'package:nauliapp/Utils/Constants/images.dart';
 import 'package:nauliapp/Models/onboarding_items.dart';
 import 'package:nauliapp/Screens/Onboarding/dot_indicator.dart';
 import 'package:nauliapp/Screens/Onboarding/onboarding_content.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nauliapp/Screens/home.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -34,7 +37,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeIn,
       );
     });
+    isLogin();
     super.initState();
+  }
+
+  void isLogin() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    bool? isLogin = sp.getBool("isLogin") ?? false;
+    if (isLogin) {
+      Timer(const Duration(seconds: 5), () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const NavBarRoots()));
+      });
+    } else {
+      Timer(const Duration(seconds: 5), () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()));
+      });
+    }
   }
 
   final List<OnboardingItems> _onboardingItems = [

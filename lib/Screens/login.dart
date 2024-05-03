@@ -6,6 +6,8 @@ import 'package:nauliapp/Features/Authentication/auth_provider.dart';
 import 'package:nauliapp/Screens/signup.dart';
 import 'package:nauliapp/Features/Authentication/auth_service.dart';
 import 'package:nauliapp/Utils/Dialogs/error.dart';
+import 'package:nauliapp/Utils/Dialogs/success.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,20 +17,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  //We need two text editing controller
-
-  //TextEditing controller to control the text when we enter into it
   final phoneNumberController = TextEditingController();
   final passwordController = TextEditingController();
-  //A bool variable for show and hide password
+
   bool isVisible = false;
 
-  //Here is our bool variable
   bool isLoginTrue = false;
 
-  //Now we should call this function in login butto
-
-  //We have to create global key for our form
   final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -44,7 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   //Username field
 
-                  //Before we show the image, after we copied the image we need to define the location in pubspec.yaml
                   Image.asset(
                     "assets/images/Nauli logo.png",
                     width: 210,
@@ -136,6 +130,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           final phone = phoneNumberController.text.toString();
                           final password = passwordController.text.toString();
                           final authService = AuthService();
+                          SharedPreferences sp =
+                              await SharedPreferences.getInstance();
+                          sp.setString("email", phone);
+                          sp.setBool("isLogin", true);
 
                           Map<String, dynamic> responseResult =
                               await authService.signIn(
@@ -144,7 +142,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                           bool isSuccess = responseResult['success'];
                           if (isSuccess) {
-                           
+                            await showSuccessDialog(
+                              context,
+                              "You Have Successfully Logged In",
+                              "Log in Success",
+                            );
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -154,17 +156,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           } else {
                             showErrorDialog(context, responseResult['message']);
                           }
-
-                          // I want that after successful login, the user should be redirected to the home page
-
-                          // ignore: unrelated_type_equality_checks
-
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => const NavBarRoots(),
-                          //   ),
-                          // );
                         }
                       },
                       child: const Text(

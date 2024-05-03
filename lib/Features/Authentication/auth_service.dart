@@ -224,7 +224,7 @@ class AuthService {
     required String seats,
     required String pick_up,
     required String first_name,
-    required String second_name,
+    required String last_name,
     required String phone,
   }) async {
     // Retrieve the token from secure storage
@@ -247,7 +247,7 @@ class AuthService {
           'seats': seats,
           'pick_up': pick_up,
           'first_name': first_name,
-          'second_name': second_name,
+          'last_name': last_name,
           'phone': phone
         }),
       );
@@ -301,3 +301,4 @@ class AuthService {
     }
   }
 }
+

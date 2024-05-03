@@ -6,6 +6,7 @@ import 'package:nauliapp/Screens/booking_table.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:nauliapp/Utils/Dialogs/error.dart';
+import 'package:nauliapp/Utils/Dialogs/success.dart';
 
 class BookingForm extends StatefulWidget {
   const BookingForm({super.key});
@@ -50,6 +51,7 @@ class _BookingFormState extends State<BookingForm> {
   void _handleVehicleSelection(dynamic newValue) {
     setState(() {
       _selectedCapacity = newValue['capacity'];
+      _selectedTime = newValue['time'];
     });
   }
 
@@ -63,7 +65,7 @@ class _BookingFormState extends State<BookingForm> {
       return 'Please enter a valid number of seats';
     }
     if (seats > _selectedCapacity) {
-      return 'Number of seats cannot exceed vehicle capacity ($_selectedCapacity)';
+      return 'Number of seats cannot Remaining Seats ($_selectedCapacity)';
     }
     return null;
   }
@@ -95,7 +97,6 @@ class _BookingFormState extends State<BookingForm> {
     }
   }
 
-  final List<String> _routes = [];
   String? _selectedRoute;
   @override
   void initState() {
@@ -233,6 +234,12 @@ class _BookingFormState extends State<BookingForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios),
+        ),
         actions: const [],
         elevation: 5,
         backgroundColor: Colors.blue,
@@ -323,7 +330,7 @@ class _BookingFormState extends State<BookingForm> {
                         controller: _secondNameController,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
-                          hintText: "Enter Second Name",
+                          hintText: "Enter Last Name",
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
                           ),
@@ -407,6 +414,7 @@ class _BookingFormState extends State<BookingForm> {
                   onChanged: (newValue) async {
                     setState(() {
                       _selectedFromRoute = newValue;
+                      _selectedToRoute = null;
                     });
                     await _getToRoutes(newValue!);
                   },
@@ -435,10 +443,10 @@ class _BookingFormState extends State<BookingForm> {
                   hint: const Text('Choose To'),
                   value: _selectedToRoute,
                   items:
-                      _toRoutes.map<DropdownMenuItem<String>>((String value) {
+                      _toRoutes.map<DropdownMenuItem<String?>>((String? value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(value!),
                     );
                   }).toList(),
                   onChanged: (newValue) {
@@ -511,7 +519,7 @@ class _BookingFormState extends State<BookingForm> {
                     ),
                   ),
                   keyboardType: TextInputType.number,
-                  // validator: _validateSeats,
+                  validator: _validateSeats,
                 ),
               ),
 
@@ -569,21 +577,25 @@ class _BookingFormState extends State<BookingForm> {
                 child: TextButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      final firstName = _firstNameController.text;
+                      final lastName = _secondNameController.text;
+                      final phoneNumber = _phoneController.text;
                       final numberOfSeats = _seatsController.text;
                       final pickUpLocation = _pickUpController.text;
                       String date =
                           DateFormat("yyyy-MM-dd").format(selectedDate);
                       final AuthService authService = AuthService();
-                      final routeString = _selectedRouteId.toString();
-                      print("Route Id is: $routeString");
-                      print("$_selectedCapacity");
+                      final routeStringId = _selectedRouteId;
+                      final time = _selectedTime;
+                      print(
+                          "Her are the details sent to the API: $date, \n$routeStringId, \n$time, \n$numberOfSeats, \n$pickUpLocation");
 
                       if (isSelfSelected) {
                         final responseResult =
                             await authService.saveSelfBooking(
-                          travel_date: "2024-05-13",
-                          to: "1",
-                          time: "03:00:00",
+                          travel_date: date,
+                          to: "$routeStringId",
+                          time: "$time",
                           seats: "$numberOfSeats",
                           pick_up: "$pickUpLocation",
                         );
@@ -604,23 +616,47 @@ class _BookingFormState extends State<BookingForm> {
                           );
                         }
                       } else {
-                        if (firstName != null && secondName != null) {
+                        if (firstName.isNotEmpty &&
+                            phoneNumber.isNotEmpty &&
+                            lastName.isNotEmpty) {
                           // Additional fields are filled, proceed with booking
-                          authService.saveOtherBooking(
-                            travel_date: "",
-                            to: "",
-                            time: "",
-                            seats: "",
-                            pick_up: "pick_up",
-                            first_name: "",
-                            second_name: "",
-                            phone: "",
+                          final responseResult =
+                              await authService.saveOtherBooking(
+                            travel_date: date,
+                            to: "$routeStringId",
+                            time: "$time",
+                            seats: "$numberOfSeats",
+                            pick_up: "$pickUpLocation",
+                            first_name: firstName,
+                            last_name: lastName,
+                            phone: phoneNumber,
                           );
+                          bool isSuccess = responseResult['success'];
+                          if (isSuccess) {
+                            await showSuccessDialog(
+                              context,
+                              "You Booking has Been Save Successfully. Proceed to Paying",
+                              "Booking Successfll",
+                            );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return const BookingTable();
+                                },
+                              ),
+                            );
+                          } else {
+                            showErrorDialog(
+                              context,
+                              "Oops Not Successfull",
+                            );
+                          }
                         } else {
                           // Additional fields are not filled, show error or prompt user
                           showErrorDialog(
                             context,
-                            "First name and Second name is required",
+                            "Make Sure you have entered First Name, Second Name, and Phone Number",
                           );
                         }
                       }
