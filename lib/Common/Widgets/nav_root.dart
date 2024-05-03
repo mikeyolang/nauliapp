@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nauliapp/Screens/booking.dart';
 import 'package:nauliapp/Screens/booking_table.dart';
 import 'package:nauliapp/Screens/home.dart';
 

@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:nauliapp/Common/Widgets/nav_root.dart';
-import 'package:nauliapp/Features/Authentication/auth_provider.dart';
 import 'package:nauliapp/Screens/signup.dart';
 import 'package:nauliapp/Features/Authentication/auth_service.dart';
 import 'package:nauliapp/Utils/Dialogs/error.dart';

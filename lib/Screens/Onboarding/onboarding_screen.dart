@@ -9,7 +9,6 @@ import 'package:nauliapp/Models/onboarding_items.dart';
 import 'package:nauliapp/Screens/Onboarding/dot_indicator.dart';
 import 'package:nauliapp/Screens/Onboarding/onboarding_content.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:nauliapp/Screens/home.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
