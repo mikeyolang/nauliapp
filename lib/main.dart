@@ -1,3 +1,8 @@
+
+// Name: Michael Olang
+// Email: olangmichael@gmail.com
+// phone: +254768241008
+// github: @mikeyolang
 import 'package:flutter/material.dart';
 import 'package:nauliapp/Screens/Onboarding/onboarding_screen.dart';
 

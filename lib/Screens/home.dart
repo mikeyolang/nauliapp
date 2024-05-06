@@ -1,7 +1,13 @@
+// Name: Michael Olang
+// Email: olangmichael@gmail.com
+// phone: +254768241008
+// github: @mikeyolang
 import 'package:flutter/material.dart';
+import 'package:nauliapp/Common/Widgets/drawer.dart';
 import 'package:nauliapp/Enums/menu_action.dart';
 import 'package:nauliapp/Screens/booking.dart';
 import 'package:nauliapp/Screens/login.dart';
+import 'package:nauliapp/Screens/profile.dart';
 import 'package:nauliapp/Utils/Constants/images.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -72,9 +78,7 @@ class HomePageScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      onPressed: () {
-                        const Drawer();
-                      },
+                      onPressed: () {},
                       icon: const Icon(
                         Icons.menu,
                         size: 30,
@@ -95,12 +99,21 @@ class HomePageScreen extends StatelessWidget {
                                   builder: (context) => const LoginScreen()),
                             );
                           }
+                        case MenuAction.profile:
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                                builder: (context) => const ProfileScreen()),
+                          );
                       }
                     }, itemBuilder: (context) {
                       return [
                         const PopupMenuItem<MenuAction>(
                           value: MenuAction.logout,
                           child: Text("Log Out"),
+                        ),
+                        const PopupMenuItem<MenuAction>(
+                          value: MenuAction.profile,
+                          child: Text("Profile"),
                         ),
                       ];
                     }),

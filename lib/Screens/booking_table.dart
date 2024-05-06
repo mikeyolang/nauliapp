@@ -1,3 +1,8 @@
+// Name: Michael Olang
+// Email: olangmichael@gmail.com
+// phone: +254768241008
+// github: @mikeyolang
+
 import 'package:flutter/material.dart';
 import 'package:nauliapp/Common/Widgets/booking_card.dart';
 import 'package:nauliapp/Common/Widgets/nav_root.dart';
@@ -40,7 +45,8 @@ class _BookingTableState extends State<BookingTable> {
         ),
         body: Container(
           decoration: const BoxDecoration(),
-          child: Column(
+          child: SingleChildScrollView(
+            child: Column(
             children: [
               FutureBuilder<List<Map<String, dynamic>>>(
                 future: authservice.fetchAllBookings(),
@@ -73,7 +79,8 @@ class _BookingTableState extends State<BookingTable> {
                 },
               ),
             ],
-          ),
-        ));
+          )
+          )
+        ),);
   }
 }

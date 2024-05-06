@@ -1,4 +1,7 @@
-// Dot indicator widget
+// Name: Michael Olang
+// Email: olangmichael@gmail.com
+// phone: +254768241008
+// github: @mikeyolang
 import 'package:flutter/material.dart';
 
 import '../../Utils/Constants/colors.dart';

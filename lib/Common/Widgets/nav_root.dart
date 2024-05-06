@@ -1,6 +1,11 @@
+// Name: Michael Olang
+// Email: olangmichael@gmail.com
+// phone: +254768241008
+// github: @mikeyolang
 import 'package:flutter/material.dart';
 import 'package:nauliapp/Screens/booking_table.dart';
 import 'package:nauliapp/Screens/home.dart';
+import 'package:nauliapp/Screens/profile.dart';
 
 class NavBarRoots extends StatefulWidget {
   const NavBarRoots({super.key});
@@ -17,9 +22,8 @@ class _NavBarRootsState extends State<NavBarRoots> {
     //  Bookings Screen
     const BookingTable(),
     //  Profile Screen
-    Container(),
+    const ProfileScreen(),
     //  Settings screen
-    Container(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -55,10 +59,6 @@ class _NavBarRootsState extends State<NavBarRoots> {
             ),
 
             // BottomNavigationBarItem(Icon(Icons.people), label: "Community")
-            BottomNavigationBarItem(
-              icon: Icon(Icons.help),
-              label: "Help",
-            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_2_rounded),
               label: "Profile",

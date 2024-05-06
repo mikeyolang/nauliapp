@@ -1,5 +1,7 @@
-// ignore_for_file: use_build_context_synchronously
-
+// Name: Michael Olang
+// Email: olangmichael@gmail.com
+// phone: +254768241008
+// github: @mikeyolang
 import 'package:flutter/material.dart';
 import 'package:nauliapp/Common/Widgets/nav_root.dart';
 import 'package:nauliapp/Features/Authentication/auth_service.dart';

@@ -1,5 +1,9 @@
-import 'dart:async';
+// Name: Michael Olang
+// Email: olangmichael@gmail.com
+// phone: +254768241008
+// github: @mikeyolang
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nauliapp/Common/Widgets/nav_root.dart';
 import 'package:nauliapp/Screens/login.dart';
@@ -44,12 +48,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     bool? isLogin = sp.getBool("isLogin") ?? false;
     if (isLogin) {
-      Timer(const Duration(seconds: 5), () {
+      Timer(const Duration(seconds: 1), () {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const NavBarRoots()));
       });
     } else {
-      Timer(const Duration(seconds: 5), () {
+      Timer(const Duration(seconds: 10), () {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const LoginScreen()));
       });

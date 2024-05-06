@@ -1,3 +1,8 @@
+// Name: Michael Olang
+// Email: olangmichael@gmail.com
+// phone: +254768241008
+// github: @mikeyolang
+
 import 'package:flutter/material.dart';
 
 const Color kPrimaryColor = Color.fromARGB(255, 45, 194, 8);

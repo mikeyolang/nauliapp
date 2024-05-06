@@ -1,4 +1,8 @@
-// ignore_for_file: avoid_print, unused_fiel, unnecessary_string_interpolations, use_build_context_synchronously
+// Name: Michael Olang
+// Email: olangmichael@gmail.com
+// phone: +254768241008
+// github: @mikeyolang
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nauliapp/Features/Authentication/auth_service.dart';
@@ -486,16 +490,21 @@ class _BookingFormState extends State<BookingForm> {
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(5),
                 ),
-                child: DropdownButtonFormField(
-                  decoration: const InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue),
+                child: Expanded(
+                 
+                  child: DropdownButtonFormField(
+                    isExpanded: true,
+                    
+                    decoration: const InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
                     ),
+                    hint: const Text('Choose Time'),
+                    value: _selectedVehicle,
+                    onChanged: _handleVehicleSelection,
+                    items: _dropdownMenuItems,
                   ),
-                  hint: const Text('Choose Time'),
-                  value: _selectedVehicle,
-                  onChanged: _handleVehicleSelection,
-                  items: _dropdownMenuItems,
                 ),
               ),
               Container(
